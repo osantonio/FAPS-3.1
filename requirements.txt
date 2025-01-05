@@ -1,0 +1,17 @@
+flask
+flask-sqlalchemy
+flask-migrate
+flask-login
+flask-bcrypt
+gunicorn
+celery
+redis
+Flask-Caching
+flask-security
+flask-talisman
+flask-uploads
+flask-s3
+flask-debugtoolbar
+pytest
+flask-restful
+flask-jwt-extended
