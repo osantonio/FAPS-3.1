@@ -15,9 +15,16 @@ login_manager = LoginManager(app)
 cache = Cache(app)
 talisman = Talisman(app)
 
+# Importar los modelos
 from .models import User, Role
 
+# Configurar Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
 
+# Registrar las rutas
 from .routes import *
+
+# Crear todas las tablas en la base de datos
+with app.app_context():
+    db.create_all()

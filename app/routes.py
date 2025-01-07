@@ -1,31 +1,67 @@
-from flask import render_template, request, redirect, url_for
-from . import app, db
-from .models import Suministro, Beneficiario, Entrega
+from . import db, bcrypt
+from flask_security import UserMixin, RoleMixin
 
-@app.route('/inventario', methods=['GET', 'POST'])
-def gestionar_inventario():
-    if request.method == 'POST':
-        nombre = request.form['nombre']
-        categoria = request.form['categoria']
-        cantidad = request.form['cantidad']
-        fecha_entrada = request.form['fecha_entrada']
-        nuevo_suministro = Suministro(nombre=nombre, categoria=categoria, cantidad=cantidad, fecha_entrada=fecha_entrada)
-        db.session.add(nuevo_suministro)
-        db.session.commit()
-        return redirect(url_for('gestionar_inventario'))
-    suministros = Suministro.query.all()
-    return render_template('inventario.html', suministros=suministros)
+# Tabla intermedia para la relación muchos a muchos entre usuarios y roles
+roles_users = db.Table(
+    'roles_users',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('role_id', db.Integer, db.ForeignKey('role.id'))
+)
 
-@app.route('/entregas', methods=['GET', 'POST'])
-def gestionar_entregas():
-    if request.method == 'POST':
-        id_suministro = request.form['id_suministro']
-        id_beneficiario = request.form['id_beneficiario']
-        cantidad = request.form['cantidad']
-        fecha = request.form['fecha']
-        nueva_entrega = Entrega(id_suministro=id_suministro, id_beneficiario=id_beneficiario, cantidad=cantidad, fecha=fecha)
-        db.session.add(nueva_entrega)
-        db.session.commit()
-        return redirect(url_for('gestionar_entregas'))
-    entregas = Entrega.query.all()
-    return render_template('entregas.html', entregas=entregas)
+# Modelo de roles
+class Role(db.Model, RoleMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+# Modelo unificado de usuarios
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), unique=True)
+    password = db.Column(db.String(255))
+    active = db.Column(db.Boolean, default=True)
+    confirmed_at = db.Column(db.DateTime)
+    nombre = db.Column(db.String(100), nullable=False)  # Nombre completo
+    no_identificacion = db.Column(db.String(100), unique=True, nullable=True)  # ID único o cédula
+    tipo_usuario = db.Column(db.String(50), nullable=False, default="colaborador")  # "admin" o "colaborador"
+    roles = db.relationship(
+        'Role',
+        secondary=roles_users,
+        backref=db.backref('users', lazy='dynamic')
+    )
+
+    # Métodos para gestionar contraseñas
+    def set_password(self, password):
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
+
+# Modelo de beneficiarios
+class Beneficiario(db.Model):
+    id_beneficiario = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    fecha_nacimiento = db.Column(db.Date, nullable=False)
+    salud_estado = db.Column(db.String(255), nullable=True)
+    salud_condiciones_medicas = db.Column(db.Text, nullable=True)
+    salud_alergias = db.Column(db.Text, nullable=True)
+    salud_medicamentos = db.Column(db.Text, nullable=True)
+    salud_historial_medico = db.Column(db.Text, nullable=True)
+    salud_requerimientos_especiales = db.Column(db.Text, nullable=True)
+    habitacion = db.Column(db.String(50), nullable=True)
+
+# Modelo de suministros
+class Suministro(db.Model):
+    id_suministro = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    categoria = db.Column(db.String(100), nullable=False)
+    cantidad = db.Column(db.Integer, nullable=False)
+    fecha_entrada = db.Column(db.Date, nullable=False)
+
+# Modelo de entregas
+class Entrega(db.Model):
+    id_entrega = db.Column(db.Integer, primary_key=True)
+    id_suministro = db.Column(db.Integer, db.ForeignKey('suministro.id'))
+    id_beneficiario = db.Column(db.Integer, db.ForeignKey('beneficiario.id'))
+    cantidad = db.Column(db.Integer, nullable=False)
+    fecha = db.Column(db.Date, nullable=False)
