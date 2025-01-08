@@ -1,4 +1,4 @@
-from . import db, bcrypt
+from .extensions import db, bcrypt
 from flask_security import UserMixin, RoleMixin
 import uuid
 
@@ -18,21 +18,20 @@ class Role(db.Model, RoleMixin):
 # Modelo unificado de usuarios
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     name = db.Column(db.String(100), nullable=False)
     lastname = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean, default=True)
     confirmed_at = db.Column(db.DateTime)
     birthday_date = db.Column(db.Date, nullable=False)
     no_identification = db.Column(db.Integer, unique=True, nullable=False)
     type_user = db.Column(db.String(50), nullable=False, default="colaborador")
-    fs_uniquifier = db.Column(db.String(64), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     roles = db.relationship(
         'Role',
         secondary=roles_users,
         backref=db.backref('users', lazy='dynamic')
     )
+
 
     # Métodos para gestionar contraseñas
     def set_password(self, password):
@@ -69,3 +68,15 @@ class Delivery(db.Model):
     resident_id = db.Column(db.Integer, db.ForeignKey('resident.id'))
     quantity = db.Column(db.Integer, nullable=False)
     date = db.Column(db.Date, nullable=False)
+
+
+
+
+
+
+
+
+
+
+
+

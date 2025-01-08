@@ -1,0 +1,118 @@
+:root {
+    --primary-color: #6c5ce7;
+    --accent-color: #a29bfe;
+}
+
+body {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    margin-top: 60px;
+}
+
+.navbar {
+    background-color: #2d2d2d;
+    border-bottom: 1px solid #3d3d3d;
+    padding: 1rem;
+}
+
+.sidebar {
+    background-color: #2d2d2d;
+    min-height: 100vh;
+    border-right: 1px solid #3d3d3d;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding-top: 60px;
+}
+
+.nav-link {
+    color: #ffffff !important;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.nav-link:hover {
+    color: var(--primary-color) !important;
+    opacity: 1;
+    background-color: #363636;
+    border-radius: 0.5rem;
+}
+
+.nav-link.active {
+    color: var(--primary-color) !important;
+    background-color: #363636;
+    border-radius: 0.5rem;
+}
+
+.card {
+    background-color: #2d2d2d;
+    border: 1px solid #3d3d3d;
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    background-color: #363636;
+    border-bottom: 1px solid #3d3d3d;
+    color: #ffffff;
+}
+
+.stats-card {
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+    border: none;
+    color: #ffffff;
+}
+
+.welcome-section {
+    background: linear-gradient(135deg, #2d2d2d, #363636);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    color: #ffffff;
+}
+
+.main-content {
+    margin-left: 250px;
+    padding: 2rem;
+}
+
+.dropdown-menu {
+    background-color: #2d2d2d;
+    border: 1px solid #3d3d3d;
+}
+
+.dropdown-item {
+    color: #ffffff;
+}
+
+.dropdown-item:hover {
+    background-color: #363636;
+    color: var(--primary-color);
+}
+
+.list-group-item {
+    background-color: transparent;
+    border-color: #3d3d3d;
+    color: #ffffff;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: relative;
+        min-height: auto;
+        padding-top: 1rem;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    body {
+        margin-top: 0;
+    }
+}

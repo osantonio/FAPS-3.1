@@ -1,61 +1,218 @@
-from . import db, bcrypt, roles_users
-from flask_security import UserMixin, RoleMixin
+from flask import Blueprint, render_template, request, redirect, url_for
+from .extensions import db, bcrypt
+from .models import User, Resident, Supply, Delivery, roles_users
 
+# Definir Blueprints
+user_bp = Blueprint('user_bp', __name__)
+resident_bp = Blueprint('resident_bp', __name__)
+supply_bp = Blueprint('supply_bp', __name__)
+delivery_bp = Blueprint('delivery_bp', __name__)
 
-# Modelo de roles
-class Role(db.Model, RoleMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True)
-    description = db.Column(db.String(255))
+# Rutas para el manejo de usuarios
+@user_bp.route('/admin/users/create', methods=['GET', 'POST'])
+def create_user():
+    if request.method == 'POST':
+        name = request.form['name']
+        lastname = request.form['lastname']
+        birthday_date = request.form['birthday_date']
+        no_identification = request.form['no_identification']
+        password = request.form['password']
+        type_user = request.form['type_user']
 
-# Modelo unificado de usuarios
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True)
-    password = db.Column(db.String(255))
-    active = db.Column(db.Boolean, default=True)
-    confirmed_at = db.Column(db.DateTime)
-    nombre = db.Column(db.String(100), nullable=False)  # Nombre completo
-    no_identificacion = db.Column(db.String(100), unique=True, nullable=True)  # ID único o cédula
-    tipo_usuario = db.Column(db.String(50), nullable=False, default="colaborador")  # "admin" o "colaborador"
-    roles = db.relationship(
-        'Role',
-        secondary=roles_users,
-        backref=db.backref('users', lazy='dynamic')
-    )
+        new_user = User(
+            name=name,
+            lastname=lastname,
+            birthday_date=birthday_date,
+            no_identification=no_identification,
+            type_user=type_user
+        )
+        new_user.set_password(password)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for('user_bp.list_users'))
+    return render_template('create_user.html')
 
-    # Métodos para gestionar contraseñas
-    def set_password(self, password):
-        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+@user_bp.route('/admin/users')
+def list_users():
+    users = User.query.all()
+    return render_template('list_users.html', users=users)
 
-    def check_password(self, password):
-        return bcrypt.check_password_hash(self.password, password)
+@user_bp.route('/admin/users/edit/<int:id>', methods=['GET', 'POST'])
+def edit_user(id):
+    user = User.query.get_or_404(id)
+    if request.method == 'POST':
+        user.name = request.form['name']
+        user.lastname = request.form['lastname']
+        user.birthday_date = request.form['birthday_date']
+        user.no_identification = request.form['no_identification']
+        user.type_user = request.form['type_user']
+        if request.form['password']:
+            user.set_password(request.form['password'])
+        db.session.commit()
+        return redirect(url_for('user_bp.list_users'))
+    return render_template('edit_user.html', user=user)
 
-# Modelo de beneficiarios
-class Beneficiario(db.Model):
-    id_beneficiario = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    fecha_nacimiento = db.Column(db.Date, nullable=False)
-    salud_estado = db.Column(db.String(255), nullable=True)
-    salud_condiciones_medicas = db.Column(db.Text, nullable=True)
-    salud_alergias = db.Column(db.Text, nullable=True)
-    salud_medicamentos = db.Column(db.Text, nullable=True)
-    salud_historial_medico = db.Column(db.Text, nullable=True)
-    salud_requerimientos_especiales = db.Column(db.Text, nullable=True)
-    habitacion = db.Column(db.String(50), nullable=True)
+@user_bp.route('/admin/users/delete/<int:id>', methods=['POST'])
+def delete_user(id):
+    user = User.query.get_or_404(id)
+    db.session.delete(user)
+    db.session.commit()
+    return redirect(url_for('user_bp.list_users'))
 
-# Modelo de suministros
-class Suministro(db.Model):
-    id_suministro = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    categoria = db.Column(db.String(100), nullable=False)
-    cantidad = db.Column(db.Integer, nullable=False)
-    fecha_entrada = db.Column(db.Date, nullable=False)
+# Rutas para el manejo de residentes
+@resident_bp.route('/admin/residents/create', methods=['GET', 'POST'])
+def create_resident():
+    if request.method == 'POST':
+        name = request.form['name']
+        lastname = request.form['lastname']
+        birthday_date = request.form['birthday_date']
+        no_identification = request.form['no_identification']
+        health_status = request.form['health_status']
+        medical_conditions = request.form['medical_conditions']
+        medications = request.form['medications']
+        medical_history = request.form['medical_history']
+        special_requirements = request.form['special_requirements']
 
-# Modelo de entregas
-class Entrega(db.Model):
-    id_entrega = db.Column(db.Integer, primary_key=True)
-    id_suministro = db.Column(db.Integer, db.ForeignKey('suministro.id'))
-    id_beneficiario = db.Column(db.Integer, db.ForeignKey('beneficiario.id'))
-    cantidad = db.Column(db.Integer, nullable=False)
-    fecha = db.Column(db.Date, nullable=False)
+        new_resident = Resident(
+            name=name,
+            lastname=lastname,
+            birthday_date=birthday_date,
+            no_identification=no_identification,
+            health_status=health_status,
+            medical_conditions=medical_conditions,
+            medications=medications,
+            medical_history=medical_history,
+            special_requirements=special_requirements
+        )
+        db.session.add(new_resident)
+        db.session.commit()
+        return redirect(url_for('resident_bp.list_residents'))
+    return render_template('create_resident.html')
+
+@resident_bp.route('/admin/residents')
+def list_residents():
+    residents = Resident.query.all()
+    return render_template('list_residents.html', residents=residents)
+
+@resident_bp.route('/admin/residents/edit/<int:id>', methods=['GET', 'POST'])
+def edit_resident(id):
+    resident = Resident.query.get_or_404(id)
+    if request.method == 'POST':
+        resident.name = request.form['name']
+        resident.lastname = request.form['lastname']
+        resident.birthday_date = request.form['birthday_date']
+        resident.no_identification = request.form['no_identification']
+        resident.health_status = request.form['health_status']
+        resident.medical_conditions = request.form['medical_conditions']
+        resident.medications = request.form['medications']
+        resident.medical_history = request.form['medical_history']
+        resident.special_requirements = request.form['special_requirements']
+        db.session.commit()
+        return redirect(url_for('resident_bp.list_residents'))
+    return render_template('edit_resident.html', resident=resident)
+
+@resident_bp.route('/admin/residents/delete/<int:id>', methods=['POST'])
+def delete_resident(id):
+    resident = Resident.query.get_or_404(id)
+    db.session.delete(resident)
+    db.session.commit()
+    return redirect(url_for('resident_bp.list_residents'))
+
+# Rutas para el manejo de suministros
+@supply_bp.route('/admin/supplies/create', methods=['GET', 'POST'])
+def create_supply():
+    if request.method == 'POST':
+        name = request.form['name']
+        category = request.form['category']
+        quantity = request.form['quantity']
+        entry_date = request.form['entry_date']
+
+        new_supply = Supply(
+            name=name,
+            category=category,
+            quantity=quantity,
+            entry_date=entry_date
+        )
+        db.session.add(new_supply)
+        db.session.commit()
+        return redirect(url_for('supply_bp.list_supplies'))
+    return render_template('create_supply.html')
+
+@supply_bp.route('/admin/supplies')
+def list_supplies():
+    supplies = Supply.query.all()
+    return render_template('list_supplies.html', supplies=supplies)
+
+@supply_bp.route('/admin/supplies/edit/<int:id>', methods=['GET', 'POST'])
+def edit_supply(id):
+    supply = Supply.query.get_or_404(id)
+    if request.method == 'POST':
+        supply.name = request.form['name']
+        supply.category = request.form['category']
+        supply.quantity = request.form['quantity']
+        supply.entry_date = request.form['entry_date']
+        db.session.commit()
+        return redirect(url_for('supply_bp.list_supplies'))
+    return render_template('edit_supply.html', supply=supply)
+
+@supply_bp.route('/admin/supplies/delete/<int:id>', methods=['POST'])
+def delete_supply(id):
+    supply = Supply.query.get_or_404(id)
+    db.session.delete(supply)
+    db.session.commit()
+    return redirect(url_for('supply_bp.list_supplies'))
+
+# Rutas para el manejo de entregas
+@delivery_bp.route('/admin/deliveries/create', methods=['GET', 'POST'])
+def create_delivery():
+    if request.method == 'POST':
+        supply_id = request.form['supply_id']
+        resident_id = request.form['resident_id']
+        quantity = request.form['quantity']
+        date = request.form['date']
+
+        new_delivery = Delivery(
+            supply_id=supply_id,
+            resident_id=resident_id,
+            quantity=quantity,
+            date=date
+        )
+        db.session.add(new_delivery)
+        db.session.commit()
+        return redirect(url_for('delivery_bp.list_deliveries'))
+    supplies = Supply.query.all()
+    residents = Resident.query.all()
+    return render_template('create_delivery.html', supplies=supplies, residents=residents)
+
+@delivery_bp.route('/admin/deliveries')
+def list_deliveries():
+    deliveries = Delivery.query.all()
+    return render_template('list_deliveries.html', deliveries=deliveries)
+
+@delivery_bp.route('/admin/deliveries/edit/<int:id>', methods=['GET', 'POST'])
+def edit_delivery(id):
+    delivery = Delivery.query.get_or_404(id)
+    if request.method == 'POST':
+        delivery.supply_id = request.form['supply_id']
+        delivery.resident_id = request.form['resident_id']
+        delivery.quantity = request.form['quantity']
+        delivery.date = request.form['date']
+        db.session.commit()
+        return redirect(url_for('delivery_bp.list_deliveries'))
+    supplies = Supply.query.all()
+    residents = Resident.query.all()
+    return render_template('edit_delivery.html', delivery=delivery, supplies=supplies, residents=residents)
+
+@delivery_bp.route('/admin/deliveries/delete/<int:id>', methods=['POST'])
+def delete_delivery(id):
+    delivery = Delivery.query.get_or_404(id)
+    db.session.delete(delivery)
+    db.session.commit()
+    return redirect(url_for('delivery_bp.list_deliveries'))
+
+# Registrar Blueprints
+def register_blueprints(app):
+    app.register_blueprint(user_bp)
+    app.register_blueprint(resident_bp)
+    app.register_blueprint(supply_bp)
+    app.register_blueprint(delivery_bp)

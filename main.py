@@ -5,5 +5,10 @@ from flask import render_template
 def index():
     return render_template('dashboard.html', title='Home')
 
-if __name__ == '__main__':
-    app.run(debug=False)
+@app.route('/test')
+def test():
+    return "Servidor funcionando"
+
+if __name__ == "__main__":
+    app.run()
+

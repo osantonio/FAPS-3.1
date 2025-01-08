@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List of Residents</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body>
+    <header>
+        <h1>List of Residents</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('user_bp.list_users') }}">Usuarios</a></li>
+            <li><a href="{{ url_for('resident_bp.list_residents') }}">Residentes</a></li>
+            <li><a href="{{ url_for('supply_bp.list_supplies') }}">Suministros</a></li>
+            <li><a href="{{ url_for('delivery_bp.list_deliveries') }}">Entregas</a></li>
+        </ul>
+    </nav>
+    <main>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Last Name</th>
+                    <th>Birthday Date</th>
+                    <th>No Identification</th>
+                    <th>Health Status</th>
+                    <th>Medical Conditions</th>
+                    <th>Medications</th>
+                    <th>Medical History</th>
+                    <th>Special Requirements</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for resident in residents %}
+                <tr>
+                    <td>{{ resident.name }}</td>
+                    <td>{{ resident.lastname }}</td>
+                    <td>{{ resident.birthday_date }}</td>
+                    <td>{{ resident.no_identification }}</td>
+                    <td>{{ resident.health_status }}</td>
+                    <td>{{ resident.medical_conditions }}</td>
+                    <td>{{ resident.medications }}</td>
+                    <td>{{ resident.medical_history }}</td>
+                    <td>{{ resident.special_requirements }}</td>
+                    <td>
+                        <a href="{{ url_for('resident_bp.edit_resident', id=resident.id) }}">Edit</a>
+                        <form action="{{ url_for('resident_bp.delete_resident', id=resident.id) }}" method="post" style="display:inline;">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+    <footer>
+        <p>&copy; 2025 My Platform</p>
+    </footer>
+</body>
+</html>
