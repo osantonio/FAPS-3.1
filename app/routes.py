@@ -1,12 +1,6 @@
-from . import db, bcrypt
+from . import db, bcrypt, roles_users
 from flask_security import UserMixin, RoleMixin
 
-# Tabla intermedia para la relación muchos a muchos entre usuarios y roles
-roles_users = db.Table(
-    'roles_users',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('role_id', db.Integer, db.ForeignKey('role.id'))
-)
 
 # Modelo de roles
 class Role(db.Model, RoleMixin):

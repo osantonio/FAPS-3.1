@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>List Deliveries</title>
+</head>
+<body>
+    <h1>Deliveries</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Supply</th>
+                <th>Resident</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for delivery in deliveries %}
+            <tr>
+                <td>{{ delivery.supply.name }}</td>
+                <td>{{ delivery.resident.name }} {{ delivery.resident.lastname }}</td>
+                <td>{{ delivery.quantity }}</td>
+                <td>{{ delivery.date }}</td>
+                <td>
+                    <a href="{{ url_for('edit_delivery', id=delivery.id) }}">Edit</a>
+                    <form action="{{ url_for('delete_delivery', id=delivery.id) }}" method="post" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

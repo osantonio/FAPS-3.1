@@ -16,7 +16,7 @@ cache = Cache(app)
 talisman = Talisman(app)
 
 # Importar los modelos
-from .models import User, Role
+from .models import User, Role, db
 
 # Configurar Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)

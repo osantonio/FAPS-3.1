@@ -1,5 +1,6 @@
 from . import db, bcrypt
 from flask_security import UserMixin, RoleMixin
+import uuid
 
 # Tabla intermedia para la relación muchos a muchos entre usuarios y roles
 roles_users = db.Table(
@@ -17,13 +18,16 @@ class Role(db.Model, RoleMixin):
 # Modelo unificado de usuarios
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True)
-    password = db.Column(db.String(255))
+    name = db.Column(db.String(100), nullable=False)
+    lastname = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean, default=True)
     confirmed_at = db.Column(db.DateTime)
-    nombre = db.Column(db.String(100), nullable=False)  # Nombre completo
-    no_identificacion = db.Column(db.String(100), unique=True, nullable=True)  # ID único o cédula
-    tipo_usuario = db.Column(db.String(50), nullable=False, default="colaborador")  # "admin" o "colaborador"
+    birthday_date = db.Column(db.Date, nullable=False)
+    no_identification = db.Column(db.Integer, unique=True, nullable=False)
+    type_user = db.Column(db.String(50), nullable=False, default="colaborador")
+    fs_uniquifier = db.Column(db.String(64), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     roles = db.relationship(
         'Role',
         secondary=roles_users,
@@ -37,31 +41,31 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
 
-# Modelo de beneficiarios
-class Beneficiario(db.Model):
-    id_beneficiario = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    fecha_nacimiento = db.Column(db.Date, nullable=False)
-    salud_estado = db.Column(db.String(255), nullable=True)
-    salud_condiciones_medicas = db.Column(db.Text, nullable=True)
-    salud_alergias = db.Column(db.Text, nullable=True)
-    salud_medicamentos = db.Column(db.Text, nullable=True)
-    salud_historial_medico = db.Column(db.Text, nullable=True)
-    salud_requerimientos_especiales = db.Column(db.Text, nullable=True)
-    habitacion = db.Column(db.String(50), nullable=True)
+# Modelo de residentes
+class Resident(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    lastname = db.Column(db.String(100), nullable=False)
+    birthday_date = db.Column(db.Date, nullable=False)
+    no_identification = db.Column(db.Integer, unique=True, nullable=False)
+    health_status = db.Column(db.String(255), nullable=True)
+    medical_conditions = db.Column(db.Text, nullable=True)
+    medications = db.Column(db.Text, nullable=True)
+    medical_history = db.Column(db.Text, nullable=True)
+    special_requirements = db.Column(db.Text, nullable=True)
 
 # Modelo de suministros
-class Suministro(db.Model):
-    id_suministro = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    categoria = db.Column(db.String(100), nullable=False)
-    cantidad = db.Column(db.Integer, nullable=False)
-    fecha_entrada = db.Column(db.Date, nullable=False)
+class Supply(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    category = db.Column(db.String(100), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    entry_date = db.Column(db.Date, nullable=False)
 
 # Modelo de entregas
-class Entrega(db.Model):
-    id_entrega = db.Column(db.Integer, primary_key=True)
-    id_suministro = db.Column(db.Integer, db.ForeignKey('suministro.id'))
-    id_beneficiario = db.Column(db.Integer, db.ForeignKey('beneficiario.id'))
-    cantidad = db.Column(db.Integer, nullable=False)
-    fecha = db.Column(db.Date, nullable=False)
+class Delivery(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    supply_id = db.Column(db.Integer, db.ForeignKey('supply.id'))
+    resident_id = db.Column(db.Integer, db.ForeignKey('resident.id'))
+    quantity = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.Date, nullable=False)

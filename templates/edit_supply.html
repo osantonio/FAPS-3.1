@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Supply</title>
+</head>
+<body>
+    <h1>Edit Supply</h1>
+    <form action="{{ url_for('edit_supply', id=supply.id) }}" method="post">
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" value="{{ supply.name }}" required><br>
+
+        <label for="category">Category:</label>
+        <input type="text" name="category" id="category" value="{{ supply.category }}" required><br>
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" name="quantity" id="quantity" value="{{ supply.quantity }}" required><br>
+
+        <label for="entry_date">Entry Date:</label>
+        <input type="date" name="entry_date" id="entry_date" value="{{ supply.entry_date }}" required><br>
+
+        <button type="submit">Update</button>
+    </form>
+</body>
+</html>

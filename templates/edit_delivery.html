@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Delivery</title>
+</head>
+<body>
+    <h1>Edit Delivery</h1>
+    <form action="{{ url_for('edit_delivery', id=delivery.id) }}" method="post">
+        <label for="supply_id">Supply:</label>
+        <select name="supply_id" id="supply_id" required>
+            {% for supply in supplies %}
+            <option value="{{ supply.id }}" {% if delivery.supply_id == supply.id %}selected{% endif %}>{{ supply.name }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="resident_id">Resident:</label>
+        <select name="resident_id" id="resident_id" required>
+            {% for resident in residents %}
+            <option value="{{ resident.id }}" {% if delivery.resident_id == resident.id %}selected{% endif %}>{{ resident.name }} {{ resident.lastname }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" name="quantity" id="quantity" value="{{ delivery.quantity }}" required><br>
+
+        <label for="date">Date:</label>
+        <input type="date" name="date" id="date" value="{{ delivery.date }}" required><br>
+
+        <button type="submit">Update</button>
+    </form>
+</body>
+</html>
