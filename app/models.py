@@ -9,11 +9,6 @@ roles_users = db.Table(
     db.Column('role_id', db.Integer, db.ForeignKey('role.id'), primary_key=True)
 )
 
-delivery_supplies = db.Table('delivery_supplies',
-    db.Column('delivery_id', db.Integer, db.ForeignKey('delivery.id'), primary_key=True),
-    db.Column('supply_id', db.Integer, db.ForeignKey('supply.id'), primary_key=True)
-)
-
 # Modelo de roles
 class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -24,6 +19,8 @@ class Role(db.Model, RoleMixin):
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     lastname = db.Column(db.String(100), nullable=False)
     active = db.Column(db.Boolean, default=True)
@@ -37,6 +34,9 @@ class User(db.Model, UserMixin):
         backref=db.backref('users', lazy='dynamic')
     )
 
+    @property
+    def is_active(self):
+        return self.active
 
     # Métodos para gestionar contraseñas
     def set_password(self, password):
@@ -66,40 +66,6 @@ class Supply(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     entry_date = db.Column(db.Date, nullable=False)
 
-    def decrease_quantity(self, amount):
-        """Disminuye la cantidad del suministro"""
-        print(f"DEBUG Supply.decrease_quantity - ID: {self.id}, Cantidad actual: {self.quantity}, A descontar: {amount}")
-        if self.quantity >= amount:
-            old_quantity = self.quantity
-            # Actualizar directamente en la base de datos
-            result = db.session.execute(
-                db.update(Supply).
-                where(Supply.id == self.id).
-                values(quantity=Supply.quantity - amount)
-            )
-            db.session.flush()
-            # Recargar el objeto desde la base de datos
-            db.session.refresh(self)
-            print(f"DEBUG Supply.decrease_quantity - Cantidad actualizada de {old_quantity} a {self.quantity}")
-            return True
-        print(f"DEBUG Supply.decrease_quantity - Cantidad insuficiente. Necesita: {amount}, Disponible: {self.quantity}")
-        return False
-
-    def increase_quantity(self, amount):
-        """Aumenta la cantidad del suministro"""
-        old_quantity = self.quantity
-        # Actualizar directamente en la base de datos
-        result = db.session.execute(
-            db.update(Supply).
-            where(Supply.id == self.id).
-            values(quantity=Supply.quantity + amount)
-        )
-        db.session.flush()
-        # Recargar el objeto desde la base de datos
-        db.session.refresh(self)
-        print(f"DEBUG Supply.increase_quantity - Cantidad actualizada de {old_quantity} a {self.quantity}")
-        return True
-
 # Modelo de entregas
 class Delivery(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -111,23 +77,6 @@ class Delivery(db.Model):
     # Relaciones
     supply = db.relationship('Supply', backref=db.backref('deliveries', lazy=True))
     resident = db.relationship('Resident', backref=db.backref('deliveries', lazy=True))
-
-    def update_supply_quantity(self):
-        """Actualiza la cantidad del suministro después de una entrega"""
-        try:
-            supply = Supply.query.get(self.supply_id)
-            if supply and self.quantity:
-                if supply.quantity >= self.quantity:
-                    supply.quantity -= self.quantity
-                    db.session.add(supply)  # Aseguramos que el cambio se registre
-                    db.session.flush()  # Forzamos la actualización
-                    return True
-                return False
-            return False
-        except Exception as e:
-            db.session.rollback()
-            print(f"Error al actualizar cantidad: {str(e)}")
-            return False
 
 
 
