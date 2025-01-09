@@ -1,32 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Delivery</title>
-</head>
-<body>
-    <h1>Edit Delivery</h1>
-    <form action="{{ url_for('edit_delivery', id=delivery.id) }}" method="post">
-        <label for="supply_id">Supply:</label>
-        <select name="supply_id" id="supply_id" required>
+{% extends 'base.html' %}
+
+{% block title %}Editar Entrega{% endblock %}
+
+{% block content %}
+<h1>Editar Entrega</h1>
+<form method="POST" action="{{ url_for('delivery_bp.edit_delivery', id=delivery.id) }}">
+    <div class="form-group">
+        <label for="supply_id">Suministro</label>
+        <select class="form-control" id="supply_id" name="supply_id" required>
             {% for supply in supplies %}
-            <option value="{{ supply.id }}" {% if delivery.supply_id == supply.id %}selected{% endif %}>{{ supply.name }}</option>
+            <option value="{{ supply.id }}" {% if supply.id == delivery.supply_id %}selected{% endif %}>{{ supply.name }}</option>
             {% endfor %}
-        </select><br>
-
-        <label for="resident_id">Resident:</label>
-        <select name="resident_id" id="resident_id" required>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="resident_id">Residente</label>
+        <select class="form-control" id="resident_id" name="resident_id" required>
             {% for resident in residents %}
-            <option value="{{ resident.id }}" {% if delivery.resident_id == resident.id %}selected{% endif %}>{{ resident.name }} {{ resident.lastname }}</option>
+            <option value="{{ resident.id }}" {% if resident.id == delivery.resident_id %}selected{% endif %}>{{ resident.name }} {{ resident.lastname }}</option>
             {% endfor %}
-        </select><br>
-
-        <label for="quantity">Quantity:</label>
-        <input type="number" name="quantity" id="quantity" value="{{ delivery.quantity }}" required><br>
-
-        <label for="date">Date:</label>
-        <input type="date" name="date" id="date" value="{{ delivery.date }}" required><br>
-
-        <button type="submit">Update</button>
-    </form>
-</body>
-</html>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="quantity">Cantidad</label>
+        <input type="number" class="form-control" id="quantity" name="quantity" value="{{ delivery.quantity }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+</form>
+{% endblock %}

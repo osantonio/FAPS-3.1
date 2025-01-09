@@ -1,36 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>List Supplies</title>
-</head>
-<body>
-    <h1>Supplies</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Quantity</th>
-                <th>Entry Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for supply in supplies %}
-            <tr>
-                <td>{{ supply.name }}</td>
-                <td>{{ supply.category }}</td>
-                <td>{{ supply.quantity }}</td>
-                <td>{{ supply.entry_date }}</td>
-                <td>
-                    <a href="{{ url_for('edit_supply', id=supply.id) }}">Edit</a>
-                    <form action="{{ url_for('delete_supply', id=supply.id) }}" method="post" style="display:inline;">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Lista de Suministros{% endblock %}
+
+{% block content %}
+<h1>Lista de Suministros</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Cantidad</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for supply in supplies %}
+        <tr>
+            <td>{{ supply.name }}</td>
+            <td>{{ supply.quantity }}</td>
+            <td>{{ supply.description }}</td>
+            <td>
+                <a class="btn btn-primary" href="{{ url_for('supply_bp.edit_supply', id=supply.id) }}">Editar</a>
+                <form action="{{ url_for('supply_bp.delete_supply', id=supply.id) }}" method="post" style="display:inline;">
+                    <button class="btn btn-danger" type="submit">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a class="btn btn-success" href="{{ url_for('supply_bp.create_supply') }}">Añadir Nuevo Suministro</a>
+{% endblock %}

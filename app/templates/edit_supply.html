@@ -1,24 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Supply</title>
-</head>
-<body>
-    <h1>Edit Supply</h1>
-    <form action="{{ url_for('edit_supply', id=supply.id) }}" method="post">
-        <label for="name">Name:</label>
-        <input type="text" name="name" id="name" value="{{ supply.name }}" required><br>
+{% extends 'base.html' %}
 
-        <label for="category">Category:</label>
-        <input type="text" name="category" id="category" value="{{ supply.category }}" required><br>
+{% block title %}Editar Suministro{% endblock %}
 
-        <label for="quantity">Quantity:</label>
-        <input type="number" name="quantity" id="quantity" value="{{ supply.quantity }}" required><br>
-
-        <label for="entry_date">Entry Date:</label>
-        <input type="date" name="entry_date" id="entry_date" value="{{ supply.entry_date }}" required><br>
-
-        <button type="submit">Update</button>
-    </form>
-</body>
-</html>
+{% block content %}
+<h1>Editar Suministro</h1>
+<form method="POST" action="{{ url_for('supply_bp.edit_supply', id=supply.id) }}">
+    <div class="form-group">
+        <label for="name">Nombre</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{ supply.name }}" required>
+    </div>
+    <div class="form-group">
+        <label for="quantity">Cantidad</label>
+        <input type="number" class="form-control" id="quantity" name="quantity" value="{{ supply.quantity }}" required>
+    </div>
+    <div class="form-group">
+        <label for="category">Categoría</label>
+        <select class="form-control" id="category" name="category" required>
+            <option value="higiene" {% if supply.category == 'higiene' %}selected{% endif %}>Higiene</option>
+            <option value="aseo general" {% if supply.category == 'aseo general' %}selected{% endif %}>Aseo General</option>
+            <option value="alimento" {% if supply.category == 'alimento' %}selected{% endif %}>Alimento</option>
+            <option value="suplemento" {% if supply.category == 'suplemento' %}selected{% endif %}>Suplemento</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="description">Descripción</label>
+        <textarea class="form-control" id="description" name="description">{{ supply.description }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+</form>
+{% endblock %}

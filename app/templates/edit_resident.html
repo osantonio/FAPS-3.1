@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Residente{% endblock %}
+
+{% block content %}
+<h1>Editar Residente</h1>
+<form method="POST" action="{{ url_for('resident_bp.edit_resident', id=resident.id) }}">
+    <div class="form-group">
+        <label for="name">Nombre</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{ resident.name }}" required>
+    </div>
+    <div class="form-group">
+        <label for="lastname">Apellido</label>
+        <input type="text" class="form-control" id="lastname" name="lastname" value="{{ resident.lastname }}" required>
+    </div>
+    <div class="form-group">
+        <label for="birthday_date">Fecha de Nacimiento</label>
+        <input type="date" class="form-control" id="birthday_date" name="birthday_date" value="{{ resident.birthday_date }}" required>
+    </div>
+    <div class="form-group">
+        <label for="no_identification">No. de Identificación</label>
+        <input type="text" class="form-control" id="no_identification" name="no_identification" value="{{ resident.no_identification }}" required>
+    </div>
+    <div class="form-group">
+        <label for="health_status">Estado de Salud</label>
+        <input type="text" class="form-control" id="health_status" name="health_status" value="{{ resident.health_status }}" required>
+    </div>
+    <div class="form-group">
+        <label for="medical_conditions">Condiciones Médicas</label>
+        <textarea class="form-control" id="medical_conditions" name="medical_conditions">{{ resident.medical_conditions }}</textarea>
+    </div>
+    <div class="form-group">
+        <label for="medications">Medicamentos</label>
+        <textarea class="form-control" id="medications" name="medications">{{ resident.medications }}</textarea>
+    </div>
+    <div class="form-group">
+        <label for="medical_history">Historial Médico</label>
+        <textarea class="form-control" id="medical_history" name="medical_history">{{ resident.medical_history }}</textarea>
+    </div>
+    <div class="form-group">
+        <label for="special_requirements">Requisitos Especiales</label>
+        <textarea class="form-control" id="special_requirements" name="special_requirements">{{ resident.special_requirements }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+</form>
+{% endblock %}

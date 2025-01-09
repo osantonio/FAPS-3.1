@@ -1,98 +1,89 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - FAPS-3</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Estilos para las tarjetas de estadísticas */
-        .stats-card {
-            background-color: var(--bg-card);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-md);
-            padding: 1rem;
-            margin: 1rem;
-            text-align: center;
-        }
+{% extends "base.html" %}
 
-        .stats-title {
-            font-size: 1.2rem;
-            color: var(--color-primary);
-        }
+{% block title %}Dashboard - FAPS{% endblock %}
 
-        .stats-value {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-top: 0.5rem;
-        }
+{% block page_title %}Dashboard{% endblock %}
 
-        .stats-trend {
-            font-size: 0.9rem;
-            color: var(--color-secondary);
-            margin-top: 0.5rem;
-        }
-
-        .progress-bar {
-            height: 10px;
-            border-radius: var(--radius-sm);
-            background-color: var(--color-primary);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        {% include 'components/sidebar.html' %}
-
-        <div class="main-content">
-            {% include 'components/header.html' %}
-
-            <div class="content">
-                <!-- Estadísticas -->
-                <div class="stats-grid">
-                    <div class="stats-card">
-                        <div class="stats-title">Total Usuarios</div>
-                        <div class="stats-value">124</div>
-                        <div class="stats-trend trend-up">
-                            <i class="fas fa-arrow-up"></i>
-                            3.7% este mes
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <h2 class="card-title">Resumen</h2>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <h3 class="card-title">Usuarios</h3>
+                                <p>{{ stats.users_count or 0 }}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="stats-card">
-                        <div class="stats-title">Residentes Activos</div>
-                        <div class="stats-value">89</div>
-                        <div class="stats-trend trend-up">
-                            <i class="fas fa-arrow-up"></i>
-                            2.4% este mes
+                        <div class="col-md-4">
+                            <div class="card">
+                                <h3 class="card-title">Residentes</h3>
+                                <p>{{ stats.residents_count or 0 }}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="stats-card">
-                        <div class="stats-title">Suministros</div>
-                        <div class="stats-value">1,234</div>
-                        <div class="stats-trend trend-down">
-                            <i class="fas fa-arrow-down"></i>
-                            1.2% este mes
-                        </div>
-                    </div>
-                    <div class="stats-card gradient">
-                        <div class="stats-title">Progreso General</div>
-                        <div class="stats-value">75%</div>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: 75%; background: white;"></div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <h3 class="card-title">Suministros</h3>
+                                <p>{{ stats.supplies_count or 0 }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <!-- Grid de contenido -->
-                <div class="content-grid">
-                    <!-- Calendario -->
-                    <div class="calendar-card">
-                        <div class="calendar-header">
-                            <h2 class="calendar-title">Calendario de Entregas</h2>
-                            <div class="btn-group">
-                                <button class="btn">Día</button>
-                                <button class="btn active">Semana</button>
-                                <button class="btn">Mes</button>
-                            </div>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <h2 class="card-title">Últimas Entregas</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Residente</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for delivery in recent_deliveries %}
+                        <tr>
+                            <td>{{ delivery.date }}</td>
+                            <td>{{ delivery.resident_name }}</td>
+                            <td>{{ delivery.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <h2 class="card-title">Suministros Críticos</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Cantidad</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for supply in critical_supplies %}
+                        <tr>
+                            <td>{{ supply.name }}</td>
+                            <td>{{ supply.quantity }}</td>
+                            <td>{{ supply.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

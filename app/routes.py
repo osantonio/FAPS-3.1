@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from .extensions import db, bcrypt
-from .models import User, Resident, Supply, Delivery, roles_users
+from .extensions import db
+from .models import User, Resident, Supply, Delivery
+from datetime import datetime
 
 # Definir Blueprints
 user_bp = Blueprint('user_bp', __name__)
@@ -14,7 +15,7 @@ def create_user():
     if request.method == 'POST':
         name = request.form['name']
         lastname = request.form['lastname']
-        birthday_date = request.form['birthday_date']
+        birthday_date = datetime.strptime(request.form['birthday_date'], '%Y-%m-%d')
         no_identification = request.form['no_identification']
         password = request.form['password']
         type_user = request.form['type_user']
@@ -43,7 +44,7 @@ def edit_user(id):
     if request.method == 'POST':
         user.name = request.form['name']
         user.lastname = request.form['lastname']
-        user.birthday_date = request.form['birthday_date']
+        user.birthday_date = datetime.strptime(request.form['birthday_date'], '%Y-%m-%d')
         user.no_identification = request.form['no_identification']
         user.type_user = request.form['type_user']
         if request.form['password']:
@@ -65,7 +66,7 @@ def create_resident():
     if request.method == 'POST':
         name = request.form['name']
         lastname = request.form['lastname']
-        birthday_date = request.form['birthday_date']
+        birthday_date = datetime.strptime(request.form['birthday_date'], '%Y-%m-%d')
         no_identification = request.form['no_identification']
         health_status = request.form['health_status']
         medical_conditions = request.form['medical_conditions']
@@ -100,7 +101,7 @@ def edit_resident(id):
     if request.method == 'POST':
         resident.name = request.form['name']
         resident.lastname = request.form['lastname']
-        resident.birthday_date = request.form['birthday_date']
+        resident.birthday_date = datetime.strptime(request.form['birthday_date'], '%Y-%m-%d')
         resident.no_identification = request.form['no_identification']
         resident.health_status = request.form['health_status']
         resident.medical_conditions = request.form['medical_conditions']
@@ -125,7 +126,7 @@ def create_supply():
         name = request.form['name']
         category = request.form['category']
         quantity = request.form['quantity']
-        entry_date = request.form['entry_date']
+        entry_date = datetime.now()
 
         new_supply = Supply(
             name=name,
@@ -150,7 +151,7 @@ def edit_supply(id):
         supply.name = request.form['name']
         supply.category = request.form['category']
         supply.quantity = request.form['quantity']
-        supply.entry_date = request.form['entry_date']
+        supply.entry_date = datetime.now()
         db.session.commit()
         return redirect(url_for('supply_bp.list_supplies'))
     return render_template('edit_supply.html', supply=supply)
@@ -169,7 +170,7 @@ def create_delivery():
         supply_id = request.form['supply_id']
         resident_id = request.form['resident_id']
         quantity = request.form['quantity']
-        date = request.form['date']
+        date = datetime.now()
 
         new_delivery = Delivery(
             supply_id=supply_id,

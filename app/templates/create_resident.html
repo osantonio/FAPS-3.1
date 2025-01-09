@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Resident{% endblock %}
+
+{% block content %}
+<h1>Create Resident</h1>
+<form method="POST" action="{{ url_for('resident_bp.create_resident') }}">
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+        <label for="lastname">Last Name</label>
+        <input type="text" class="form-control" id="lastname" name="lastname" required>
+    </div>
+    <div class="form-group">
+        <label for="birthday_date">Birthday Date</label>
+        <input type="date" class="form-control" id="birthday_date" name="birthday_date" required>
+    </div>
+    <div class="form-group">
+        <label for="no_identification">No Identification</label>
+        <input type="text" class="form-control" id="no_identification" name="no_identification" required>
+    </div>
+    <div class="form-group">
+        <label for="health_status">Health Status</label>
+        <input type="text" class="form-control" id="health_status" name="health_status" required>
+    </div>
+    <div class="form-group">
+        <label for="medical_conditions">Medical Conditions</label>
+        <textarea class="form-control" id="medical_conditions" name="medical_conditions"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="medications">Medications</label>
+        <textarea class="form-control" id="medications" name="medications"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="medical_history">Medical History</label>
+        <textarea class="form-control" id="medical_history" name="medical_history"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="special_requirements">Special Requirements</label>
+        <textarea class="form-control" id="special_requirements" name="special_requirements"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+{% endblock %}
