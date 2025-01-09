@@ -1,0 +1,38 @@
+<nav class="sidebar"></nav>
+    <div class="logo">
+        <i class="fas fa-tasks"></i>
+        FAPS-3
+    </div>
+    <ul class="nav-menu">
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'user_bp.list_users' %}active{% endif %}" href="{{ url_for('user_bp.list_users') }}">
+                <i class="fas fa-users"></i>
+                Usuarios
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'resident_bp.list_residents' %}active{% endif %}" href="{{ url_for('resident_bp.list_residents') }}">
+                <i class="fas fa-building"></i>
+                Residentes
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'supply_bp.list_supplies' %}active{% endif %}" href="{{ url_for('supply_bp.list_supplies') }}">
+                <i class="fas fa-box"></i>
+                Suministros
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'delivery_bp.list_deliveries' %}active{% endif %}" href="{{ url_for('delivery_bp.list_deliveries') }}">
+                <i class="fas fa-truck"></i>
+                Entregas
+            </a>
+        </li>
+    </ul>
+</nav>

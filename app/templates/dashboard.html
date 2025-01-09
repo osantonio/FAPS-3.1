@@ -4,233 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - FAPS-3</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Estilos para las tarjetas de estadísticas */
+        .stats-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            padding: 1rem;
+            margin: 1rem;
+            text-align: center;
+        }
+
+        .stats-title {
+            font-size: 1.2rem;
+            color: var(--color-primary);
+        }
+
+        .stats-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .stats-trend {
+            font-size: 0.9rem;
+            color: var(--color-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 10px;
+            border-radius: var(--radius-sm);
+            background-color: var(--color-primary);
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">FAPS-3</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle me-2"></i>Usuario
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Perfil</a></li>
-                            <li><a class="dropdown-item" href="#">Configuración</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <div class="container">
+        {% include 'components/sidebar.html' %}
 
-    <div class="container-fluid">
-        <div class="row">
-            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
-                <div class="position-sticky">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="{{ url_for('index') }}">
-                                <i class="fas fa-home me-2"></i>Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('user_bp.list_users') }}">
-                                <i class="fas fa-users me-2"></i>Usuarios
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('resident_bp.list_residents') }}">
-                                <i class="fas fa-building me-2"></i>Residentes
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('supply_bp.list_supplies') }}">
-                                <i class="fas fa-box me-2"></i>Suministros
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('delivery_bp.list_deliveries') }}">
-                                <i class="fas fa-truck me-2"></i>Entregas
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+        <div class="main-content">
+            {% include 'components/header.html' %}
 
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Dashboard</h1>
-                </div>
-
-                <div class="row">
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-primary shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                            Usuarios</div>
-                                        <div class="h5 mb-0 font-weight-bold">124</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-users fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="content">
+                <!-- Estadísticas -->
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="stats-title">Total Usuarios</div>
+                        <div class="stats-value">124</div>
+                        <div class="stats-trend trend-up">
+                            <i class="fas fa-arrow-up"></i>
+                            3.7% este mes
                         </div>
                     </div>
-
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-success shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                            Residentes</div>
-                                        <div class="h5 mb-0 font-weight-bold">89</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-building fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="stats-card">
+                        <div class="stats-title">Residentes Activos</div>
+                        <div class="stats-value">89</div>
+                        <div class="stats-trend trend-up">
+                            <i class="fas fa-arrow-up"></i>
+                            2.4% este mes
                         </div>
                     </div>
-
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-info shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                            Suministros</div>
-                                        <div class="h5 mb-0 font-weight-bold">1,234</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-box fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="stats-card">
+                        <div class="stats-title">Suministros</div>
+                        <div class="stats-value">1,234</div>
+                        <div class="stats-trend trend-down">
+                            <i class="fas fa-arrow-down"></i>
+                            1.2% este mes
                         </div>
                     </div>
-
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-warning shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                            Entregas</div>
-                                        <div class="h5 mb-0 font-weight-bold">456</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-truck fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="stats-card gradient">
+                        <div class="stats-title">Progreso General</div>
+                        <div class="stats-value">75%</div>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 75%; background: white;"></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-lg-6 mb-4">
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold">Últimas Entregas</h6>
+                <!-- Grid de contenido -->
+                <div class="content-grid">
+                    <!-- Calendario -->
+                    <div class="calendar-card">
+                        <div class="calendar-header">
+                            <h2 class="calendar-title">Calendario de Entregas</h2>
+                            <div class="btn-group">
+                                <button class="btn">Día</button>
+                                <button class="btn active">Semana</button>
+                                <button class="btn">Mes</button>
                             </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Residente</th>
-                                                <th>Fecha</th>
-                                                <th>Estado</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>Juan Pérez</td>
-                                                <td>2023-05-01</td>
-                                                <td><span class="badge bg-success">Completada</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>2</td>
-                                                <td>María García</td>
-                                                <td>2023-05-02</td>
-                                                <td><span class="badge bg-warning">En proceso</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>3</td>
-                                                <td>Carlos Rodríguez</td>
-                                                <td>2023-05-03</td>
-                                                <td><span class="badge bg-danger">Pendiente</span></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6 mb-4">
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold">Suministros Bajos</h6>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Nombre</th>
-                                                <th>Stock</th>
-                                                <th>Estado</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>Medicamento A</td>
-                                                <td>5</td>
-                                                <td><span class="badge bg-danger">Crítico</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>2</td>
-                                                <td>Suministro B</td>
-                                                <td>10</td>
-                                                <td><span class="badge bg-warning">Bajo</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>3</td>
-                                                <td>Producto C</td>
-                                                <td>15</td>
-                                                <td><span class="badge bg-info">Reordenar</span></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
