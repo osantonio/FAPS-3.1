@@ -21,6 +21,32 @@ Este proyecto es una aplicación web construida con Flask que utiliza varias ext
 - **Caché**: Implementado con Flask-Caching para mejorar el rendimiento.
 - **Protección**: Flask-Talisman se utiliza para mejorar la seguridad de la aplicación.
 
+## Rutas del Sistema
+
+### Rutas de Usuarios
+- **GET/POST** `/admin/users/create` - Crear nuevo usuario
+- **GET** `/admin/users` - Listar todos los usuarios
+- **GET/POST** `/admin/users/edit/<id>` - Editar usuario específico
+- **POST** `/admin/users/delete/<id>` - Eliminar usuario específico
+
+### Rutas de Residentes
+- **GET/POST** `/admin/residents/create` - Crear nuevo residente
+- **GET** `/admin/residents` - Listar todos los residentes
+- **GET/POST** `/admin/residents/edit/<id>` - Editar residente específico
+- **POST** `/admin/residents/delete/<id>` - Eliminar residente específico
+
+### Rutas de Suministros
+- **GET/POST** `/admin/supplies/create` - Crear nuevo suministro
+- **GET** `/admin/supplies` - Listar todos los suministros
+- **GET/POST** `/admin/supplies/edit/<id>` - Editar suministro específico
+- **POST** `/admin/supplies/delete/<id>` - Eliminar suministro específico
+
+### Rutas de Entregas
+- **GET/POST** `/admin/deliveries/create` - Crear nueva entrega
+- **GET** `/admin/deliveries` - Listar todas las entregas
+- **GET/POST** `/admin/deliveries/edit/<id>` - Editar entrega específica
+- **POST** `/admin/deliveries/delete/<id>` - Eliminar entrega específica
+
 ## Requisitos
 
 - Python 3.x
