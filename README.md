@@ -1,81 +1,134 @@
-# Proyecto Flask
+# Sistema de Gestión de Entregas FAPS
 
-Este proyecto es una aplicación web construida con Flask que utiliza varias extensiones para proporcionar funcionalidades como autenticación, seguridad, caché y más.
+Este sistema es una aplicación web desarrollada con Flask para la gestión de entregas, residentes y suministros. Está diseñado para facilitar el control y seguimiento de entregas en un entorno administrativo.
+
+## Características Principales
+
+- **Gestión de Usuarios**: Sistema completo de autenticación y autorización
+- **Gestión de Residentes**: Registro y administración de información de residentes
+- **Control de Suministros**: Inventario y gestión de suministros disponibles
+- **Sistema de Entregas**: Registro y seguimiento de entregas a residentes
+- **Interfaz Administrativa**: Panel de control intuitivo para todas las operaciones
+- **Seguridad**: Implementación robusta de medidas de seguridad
+- **Procesamiento Asíncrono**: Manejo de tareas en segundo plano con Celery
 
 ## Estructura del Proyecto
 
-- **app/**: Contiene la lógica principal de la aplicación.
-  - **\_\_init\_\_.py**: Configura la aplicación Flask y sus extensiones.
-  - **models.py**: Define los modelos de base de datos utilizando SQLAlchemy.
-  - **routes.py**: Define las rutas de la aplicación.
-- **config.py**: Archivo de configuración para la aplicación.
-- **main.py**: Punto de entrada principal de la aplicación.
-- **celery.py**: Configuración para tareas asíncronas con Celery.
-- **static/**: Archivos estáticos como CSS y JavaScript.
-- **templates/**: Plantillas HTML para la aplicación.
-- **requirements.txt**: Lista de dependencias del proyecto.
+```
+FAPS-3/
+├── app/
+│   ├── routes/
+│   │   ├── delivery_routes.py
+│   │   ├── resident_routes.py
+│   │   ├── supply_routes.py
+│   │   └── user_routes.py
+│   ├── templates/
+│   ├── models.py
+│   └── extensions.py
+├── migrations/
+├── celery.py
+├── config.py
+└── main.py
+```
 
-## Funcionalidades
+## Requisitos del Sistema
 
-- **Autenticación y Seguridad**: Utiliza Flask-Security para manejar la autenticación de usuarios y roles.
-- **Caché**: Implementado con Flask-Caching para mejorar el rendimiento.
-- **Protección**: Flask-Talisman se utiliza para mejorar la seguridad de la aplicación.
+- Python 3.8 o superior
+- PostgreSQL
+- Redis (para Celery y caché)
 
-## Rutas del Sistema
+## Configuración del Entorno
 
-### Rutas de Usuarios
-- **GET/POST** `/admin/users/create` - Crear nuevo usuario
-- **GET** `/admin/users` - Listar todos los usuarios
-- **GET/POST** `/admin/users/edit/<id>` - Editar usuario específico
-- **POST** `/admin/users/delete/<id>` - Eliminar usuario específico
+1. Clona el repositorio:
+   ```bash
+   git clone [URL_DEL_REPOSITORIO]
+   cd FAPS-3
+   ```
 
-### Rutas de Residentes
-- **GET/POST** `/admin/residents/create` - Crear nuevo residente
-- **GET** `/admin/residents` - Listar todos los residentes
-- **GET/POST** `/admin/residents/edit/<id>` - Editar residente específico
-- **POST** `/admin/residents/delete/<id>` - Eliminar residente específico
+2. Crea y activa un entorno virtual:
+   ```bash
+   python -m venv venv
+   # En Windows:
+   venv\Scripts\activate
+   # En Unix/MacOS:
+   source venv/bin/activate
+   ```
 
-### Rutas de Suministros
-- **GET/POST** `/admin/supplies/create` - Crear nuevo suministro
-- **GET** `/admin/supplies` - Listar todos los suministros
-- **GET/POST** `/admin/supplies/edit/<id>` - Editar suministro específico
-- **POST** `/admin/supplies/delete/<id>` - Eliminar suministro específico
+3. Instala las dependencias:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Rutas de Entregas
-- **GET/POST** `/admin/deliveries/create` - Crear nueva entrega
-- **GET** `/admin/deliveries` - Listar todas las entregas
-- **GET/POST** `/admin/deliveries/edit/<id>` - Editar entrega específica
-- **POST** `/admin/deliveries/delete/<id>` - Eliminar entrega específica
+4. Configura las variables de entorno:
+   ```bash
+   # Crea un archivo .env con las siguientes variables
+   FLASK_APP=main.py
+   FLASK_ENV=development
+   DATABASE_URL=postgresql://[usuario]:[contraseña]@localhost/faps
+   SECRET_KEY=[tu_clave_secreta]
+   REDIS_URL=redis://localhost:6379/0
+   ```
 
-## Requisitos
+5. Inicializa la base de datos:
+   ```bash
+   flask db upgrade
+   ```
 
-- Python 3.x
-- Flask
-- Flask-SQLAlchemy
-- Flask-Bcrypt
-- Flask-Login
-- Flask-Caching
-- Flask-Security
-- Flask-Talisman
-- Celery
+## Ejecución del Proyecto
 
-## Instalación
+1. Inicia Redis:
+   ```bash
+   redis-server
+   ```
 
-1. Clona el repositorio.
-2. Crea un entorno virtual: `python -m venv .venv`
-3. Activa el entorno virtual: 
-   - En Windows: `.venv\Scripts\activate`
-   - En Unix o MacOS: `source .venv/bin/activate`
-4. Instala las dependencias: `pip install -r requirements.txt`
+2. Inicia Celery (en una terminal separada):
+   ```bash
+   celery -A celery.celery worker --loglevel=info
+   ```
 
-## Ejecución
+3. Inicia la aplicación Flask:
+   ```bash
+   flask run
+   ```
 
-1. Configura las variables de entorno necesarias.
-2. Inicia la aplicación: `python main.py`
+## Funcionalidades Implementadas
 
-## Mejoras Necesarias
+### Módulo de Usuarios
+- Registro y autenticación de usuarios
+- Gestión de roles y permisos
+- Panel de administración de usuarios
 
-- **Implementación de Funcionalidades CRUD**: Asegúrate de que todas las operaciones CRUD estén implementadas para los modelos.
-- **Pruebas**: Añadir pruebas unitarias para asegurar la calidad del código.
-- **Documentación**: Completar la documentación de la API y del código.
-- **Despliegue**: Configurar un entorno de despliegue para producción. 
+### Módulo de Residentes
+- Registro completo de información de residentes
+- Historial de entregas por residente
+- Búsqueda y filtrado de residentes
+
+### Módulo de Suministros
+- Inventario detallado de suministros
+- Control de stock
+- Historial de movimientos
+
+### Módulo de Entregas
+- Registro de entregas
+- Seguimiento de estado
+- Reportes y estadísticas
+
+## Seguridad
+
+- Autenticación mediante Flask-Login
+- Protección CSRF
+- Encriptación de contraseñas con Bcrypt
+- Headers de seguridad con Flask-Talisman
+
+## Mantenimiento
+
+Para mantener el sistema actualizado:
+
+1. Actualiza las dependencias regularmente
+2. Ejecuta las migraciones pendientes
+3. Revisa los logs de errores
+4. Realiza backups de la base de datos
+
+## Soporte
+
+Para reportar problemas o solicitar nuevas características, por favor crear un issue en el repositorio. 

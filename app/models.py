@@ -17,16 +17,22 @@ class Role(db.Model, RoleMixin):
 
 # Modelo unificado de usuarios
 class User(db.Model, UserMixin):
+    __tablename__ = 'user'
+    __table_args__ = (
+        db.UniqueConstraint('email', name='uq_user_email'),
+        db.UniqueConstraint('no_identification', name='uq_user_identification'),
+    )
+
     id = db.Column(db.Integer, primary_key=True)
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
-    email = db.Column(db.String(255), unique=True, nullable=False)
+    email = db.Column(db.String(255), nullable=False)
     password = db.Column(db.String(255), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     lastname = db.Column(db.String(100), nullable=False)
     active = db.Column(db.Boolean, default=True)
     confirmed_at = db.Column(db.DateTime)
     birthday_date = db.Column(db.Date, nullable=False)
-    no_identification = db.Column(db.Integer, unique=True, nullable=False)
+    no_identification = db.Column(db.Integer, nullable=False)
     type_user = db.Column(db.String(50), nullable=False, default="colaborador")
     roles = db.relationship(
         'Role',
@@ -77,14 +83,3 @@ class Delivery(db.Model):
     # Relaciones
     supply = db.relationship('Supply', backref=db.backref('deliveries', lazy=True))
     resident = db.relationship('Resident', backref=db.backref('deliveries', lazy=True))
-
-
-
-
-
-
-
-
-
-
-
