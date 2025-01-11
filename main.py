@@ -2,8 +2,10 @@ from app import app
 from flask import render_template
 from datetime import datetime
 from app.models import User, Resident, Supply, Delivery
+from app.routes.auth_routes import login_required
 
 @app.route('/')
+@login_required
 def dashboard():
     # Contadores de entidades
     users_count = User.query.count()

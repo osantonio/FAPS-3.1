@@ -2,15 +2,19 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from app.extensions import db
 from app.models import Supply
 from datetime import datetime
+from app.routes.auth_routes import login_required, admin_required
 
 supply_bp = Blueprint('supply_bp', __name__)
 
 @supply_bp.route('/admin/supplies')
+@login_required
 def list_supplies():
     supplies = Supply.query.all()
     return render_template('list_supplies.html', supplies=supplies)
 
 @supply_bp.route('/admin/supplies/create', methods=['GET', 'POST'])
+@login_required
+@admin_required
 def create_supply():
     if request.method == 'POST':
         name = request.form['name']
@@ -31,6 +35,8 @@ def create_supply():
     return render_template('create_supply.html')
 
 @supply_bp.route('/admin/supplies/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
 def edit_supply(id):
     supply = Supply.query.get_or_404(id)
     if request.method == 'POST':
@@ -43,6 +49,8 @@ def edit_supply(id):
     return render_template('edit_supply.html', supply=supply)
 
 @supply_bp.route('/admin/supplies/delete/<int:id>', methods=['POST'])
+@login_required
+@admin_required
 def delete_supply(id):
     supply = Supply.query.get_or_404(id)
     db.session.delete(supply)

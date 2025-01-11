@@ -1,44 +1,97 @@
 {% extends 'base.html' %}
 
-{% block title %}List of Residents{% endblock %}
+{% block title %}Lista de Residentes{% endblock %}
 
 {% block content %}
-<h1>List of Residents</h1>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Last Name</th>
-            <th>Birthday Date</th>
-            <th>No Identification</th>
-            <th>Health Status</th>
-            <th>Medical Conditions</th>
-            <th>Medications</th>
-            <th>Medical History</th>
-            <th>Special Requirements</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for resident in residents %}
-        <tr>
-            <td>{{ resident.name }}</td>
-            <td>{{ resident.lastname }}</td>
-            <td>{{ resident.birthday_date }}</td>
-            <td>{{ resident.no_identification }}</td>
-            <td>{{ resident.health_status }}</td>
-            <td>{{ resident.medical_conditions }}</td>
-            <td>{{ resident.medications }}</td>
-            <td>{{ resident.medical_history }}</td>
-            <td>{{ resident.special_requirements }}</td>
-            <td>
-                <a class="btn btn-primary" href="{{ url_for('resident_bp.edit_resident', id=resident.id) }}">Edit</a>
-                <form action="{{ url_for('resident_bp.delete_resident', id=resident.id) }}" method="post" style="display:inline;">
-                    <button class="btn btn-danger" type="submit">Delete</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Lista de Residentes</h1>
+        {% if is_admin %}
+        <a href="{{ url_for('resident_bp.create_resident') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Nuevo Residente
+        </a>
+        {% endif %}
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Nombre</th>
+                            <th>Identificación</th>
+                            <th>Estado de Salud</th>
+                            <th>Cuenta de Usuario</th>
+                            {% if is_admin %}
+                            <th>Acciones</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resident in residents %}
+                        <tr>
+                            <td>
+                                {% if resident_users[resident.id] and resident_users[resident.id].profile_photo %}
+                                    <img src="{{ url_for('static', filename=resident_users[resident.id].profile_photo) }}" 
+                                         class="rounded-circle" 
+                                         style="width: 40px; height: 40px; object-fit: cover;"
+                                         alt="Foto de perfil">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='img/default-profile.png') }}" 
+                                         class="rounded-circle" 
+                                         style="width: 40px; height: 40px; object-fit: cover;"
+                                         alt="Foto por defecto">
+                                {% endif %}
+                            </td>
+                            <td>{{ resident.name }} {{ resident.lastname }}</td>
+                            <td>{{ resident.no_identification }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ resident.health_status }}</span>
+                            </td>
+                            <td>
+                                {% if resident_users[resident.id] %}
+                                    <span class="badge bg-success">Activa</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Sin cuenta</span>
+                                {% endif %}
+                            </td>
+                            {% if is_admin %}
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('resident_bp.edit_resident', id=resident.id) }}" 
+                                       class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                    <form action="{{ url_for('resident_bp.delete_resident', id=resident.id) }}" 
+                                          method="post" 
+                                          class="d-inline"
+                                          onsubmit="return confirm('¿Estás seguro de que deseas eliminar este residente?');">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

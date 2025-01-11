@@ -1,134 +1,107 @@
-# Sistema de Gestión de Entregas FAPS
+# FAPS - Sistema de Gestión de Fundación de Adultos
 
-Este sistema es una aplicación web desarrollada con Flask para la gestión de entregas, residentes y suministros. Está diseñado para facilitar el control y seguimiento de entregas en un entorno administrativo.
+## Requisitos Previos
+- Python 3.8 o superior
+- pip (gestor de paquetes de Python)
+- Git
 
-## Características Principales
+## Instalación
 
-- **Gestión de Usuarios**: Sistema completo de autenticación y autorización
-- **Gestión de Residentes**: Registro y administración de información de residentes
-- **Control de Suministros**: Inventario y gestión de suministros disponibles
-- **Sistema de Entregas**: Registro y seguimiento de entregas a residentes
-- **Interfaz Administrativa**: Panel de control intuitivo para todas las operaciones
-- **Seguridad**: Implementación robusta de medidas de seguridad
-- **Procesamiento Asíncrono**: Manejo de tareas en segundo plano con Celery
+1. Clonar el repositorio:
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd FAPS-3
+```
 
-## Estructura del Proyecto
+2. Crear y activar un entorno virtual:
+```bash
+# En Windows
+python -m venv .venv
+.venv\Scripts\activate
 
+# En Linux/Mac
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+3. Instalar las dependencias:
+```bash
+pip install -r requirements.txt
+```
+
+4. Configurar las variables de entorno:
+   - Crear un archivo `.env` en la raíz del proyecto
+   - Copiar el contenido de `.env.example` y ajustar los valores
+
+5. Inicializar la base de datos:
+```bash
+flask db upgrade
+```
+
+6. Crear las carpetas necesarias:
+```bash
+# En Windows
+mkdir app\static\uploads\profile_photos
+mkdir app\static\img
+
+# En Linux/Mac
+mkdir -p app/static/uploads/profile_photos app/static/img
+```
+
+7. Ejecutar la aplicación:
+```bash
+flask run
+```
+
+## Estructura de Directorios
 ```
 FAPS-3/
 ├── app/
-│   ├── routes/
-│   │   ├── delivery_routes.py
-│   │   ├── resident_routes.py
-│   │   ├── supply_routes.py
-│   │   └── user_routes.py
+│   ├── static/
+│   │   ├── css/
+│   │   ├── img/
+│   │   └── uploads/
+│   │       └── profile_photos/
 │   ├── templates/
+│   ├── routes/
 │   ├── models.py
-│   └── extensions.py
+│   └── utils.py
 ├── migrations/
-├── celery.py
+├── .env
+├── .gitignore
 ├── config.py
-└── main.py
+└── requirements.txt
 ```
-
-## Requisitos del Sistema
-
-- Python 3.8 o superior
-- PostgreSQL
-- Redis (para Celery y caché)
 
 ## Configuración del Entorno
 
-1. Clona el repositorio:
-   ```bash
-   git clone [URL_DEL_REPOSITORIO]
-   cd FAPS-3
-   ```
+Crear un archivo `.env` con las siguientes variables:
+```
+FLASK_APP=main.py
+FLASK_ENV=development
+SECRET_KEY=tu_clave_secreta_aqui
+DATABASE_URL=sqlite:///faps.db
+```
 
-2. Crea y activa un entorno virtual:
-   ```bash
-   python -m venv venv
-   # En Windows:
-   venv\Scripts\activate
-   # En Unix/MacOS:
-   source venv/bin/activate
-   ```
+## Roles de Usuario
+- **Administrador**: Acceso total al sistema
+- **Colaborador**: Puede ver residentes y realizar entregas
+- **Residente**: Acceso limitado a su información personal
 
-3. Instala las dependencias:
-   ```bash
-   pip install -r requirements.txt
-   ```
+## Notas Importantes
+1. No subir al repositorio:
+   - Archivos de entorno virtual (.venv)
+   - Base de datos local (*.db)
+   - Archivos de configuración local (.env)
+   - Archivos de caché (__pycache__)
+   - Archivos de medios subidos por usuarios
 
-4. Configura las variables de entorno:
-   ```bash
-   # Crea un archivo .env con las siguientes variables
-   FLASK_APP=main.py
-   FLASK_ENV=development
-   DATABASE_URL=postgresql://[usuario]:[contraseña]@localhost/faps
-   SECRET_KEY=[tu_clave_secreta]
-   REDIS_URL=redis://localhost:6379/0
-   ```
+2. Mantener actualizadas las dependencias:
+```bash
+pip freeze > requirements.txt
+```
 
-5. Inicializa la base de datos:
-   ```bash
-   flask db upgrade
-   ```
-
-## Ejecución del Proyecto
-
-1. Inicia Redis:
-   ```bash
-   redis-server
-   ```
-
-2. Inicia Celery (en una terminal separada):
-   ```bash
-   celery -A celery.celery worker --loglevel=info
-   ```
-
-3. Inicia la aplicación Flask:
-   ```bash
-   flask run
-   ```
-
-## Funcionalidades Implementadas
-
-### Módulo de Usuarios
-- Registro y autenticación de usuarios
-- Gestión de roles y permisos
-- Panel de administración de usuarios
-
-### Módulo de Residentes
-- Registro completo de información de residentes
-- Historial de entregas por residente
-- Búsqueda y filtrado de residentes
-
-### Módulo de Suministros
-- Inventario detallado de suministros
-- Control de stock
-- Historial de movimientos
-
-### Módulo de Entregas
-- Registro de entregas
-- Seguimiento de estado
-- Reportes y estadísticas
-
-## Seguridad
-
-- Autenticación mediante Flask-Login
-- Protección CSRF
-- Encriptación de contraseñas con Bcrypt
-- Headers de seguridad con Flask-Talisman
-
-## Mantenimiento
-
-Para mantener el sistema actualizado:
-
-1. Actualiza las dependencias regularmente
-2. Ejecuta las migraciones pendientes
-3. Revisa los logs de errores
-4. Realiza backups de la base de datos
-
-## Soporte
-
-Para reportar problemas o solicitar nuevas características, por favor crear un issue en el repositorio. 
+3. Antes de hacer push:
+   - Ejecutar las pruebas
+   - Actualizar requirements.txt si se instalaron nuevas dependencias
+   - No incluir archivos sensibles o personales 

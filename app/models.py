@@ -1,50 +1,26 @@
 from .extensions import db, bcrypt
-from flask_security import UserMixin, RoleMixin
-import uuid
-
-# Tabla intermedia para la relación muchos a muchos entre usuarios y roles
-roles_users = db.Table(
-    'roles_users',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('role_id', db.Integer, db.ForeignKey('role.id'), primary_key=True)
-)
-
-# Modelo de roles
-class Role(db.Model, RoleMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True)
-    description = db.Column(db.String(255))
 
 # Modelo unificado de usuarios
-class User(db.Model, UserMixin):
+class User(db.Model):
     __tablename__ = 'user'
     __table_args__ = (
-        db.UniqueConstraint('email', name='uq_user_email'),
         db.UniqueConstraint('no_identification', name='uq_user_identification'),
     )
 
     id = db.Column(db.Integer, primary_key=True)
-    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
-    email = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), nullable=True)
     password = db.Column(db.String(255), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     lastname = db.Column(db.String(100), nullable=False)
     active = db.Column(db.Boolean, default=True)
-    confirmed_at = db.Column(db.DateTime)
     birthday_date = db.Column(db.Date, nullable=False)
     no_identification = db.Column(db.Integer, nullable=False)
     type_user = db.Column(db.String(50), nullable=False, default="colaborador")
-    roles = db.relationship(
-        'Role',
-        secondary=roles_users,
-        backref=db.backref('users', lazy='dynamic')
-    )
+    profile_photo = db.Column(db.String(255), nullable=True)
 
-    @property
     def is_active(self):
         return self.active
 
-    # Métodos para gestionar contraseñas
     def set_password(self, password):
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 

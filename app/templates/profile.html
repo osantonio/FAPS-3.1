@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Perfil{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if current_user.profile_photo %}
+                        <img src="{{ url_for('static', filename=current_user.profile_photo) }}" 
+                             class="rounded-circle img-fluid mb-3" 
+                             style="width: 150px; height: 150px; object-fit: cover;"
+                             alt="Foto de perfil">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='img/default-profile.png') }}" 
+                             class="rounded-circle img-fluid mb-3"
+                             style="width: 150px; height: 150px; object-fit: cover;"
+                             alt="Foto de perfil por defecto">
+                    {% endif %}
+                    <h5 class="card-title">{{ current_user.name }} {{ current_user.lastname }}</h5>
+                    <p class="card-text">{{ current_user.type_user|title }}</p>
+                    
+                    <form action="{{ url_for('user_bp.update_profile_photo') }}" method="post" enctype="multipart/form-data" class="mb-3">
+                        <div class="mb-3">
+                            <label for="photo" class="form-label">Cambiar foto de perfil</label>
+                            <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Actualizar foto</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Información Personal</h3>
+                    <form action="{{ url_for('user_bp.update_profile') }}" method="post">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ current_user.name }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="lastname" class="form-label">Apellido</label>
+                            <input type="text" class="form-control" id="lastname" name="lastname" value="{{ current_user.lastname }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="birthday_date" class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" class="form-control" id="birthday_date" name="birthday_date" value="{{ current_user.birthday_date }}" required>
+                        </div>
+                        
+                        <h4 class="mt-4 mb-3">Cambiar Contraseña</h4>
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">Contraseña Actual</label>
+                            <input type="password" class="form-control" id="current_password" name="current_password">
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">Nueva Contraseña</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Confirmar Nueva Contraseña</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Actualizar Perfil</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -9,8 +9,11 @@
         <tr>
             <th>Nombre</th>
             <th>Cantidad</th>
-            <th>Descripción</th>
+            <th>Categoría</th>
+            <th>Fecha de Entrada</th>
+            {% if session['user_type'] == 'admin' %}
             <th>Acciones</th>
+            {% endif %}
         </tr>
     </thead>
     <tbody>
@@ -18,16 +21,21 @@
         <tr>
             <td>{{ supply.name }}</td>
             <td>{{ supply.quantity }}</td>
-            <td>{{ supply.description }}</td>
+            <td>{{ supply.category }}</td>
+            <td>{{ supply.entry_date.strftime('%Y-%m-%d') }}</td>
+            {% if session['user_type'] == 'admin' %}
             <td>
                 <a class="btn btn-primary" href="{{ url_for('supply_bp.edit_supply', id=supply.id) }}">Editar</a>
                 <form action="{{ url_for('supply_bp.delete_supply', id=supply.id) }}" method="post" style="display:inline;">
                     <button class="btn btn-danger" type="submit">Eliminar</button>
                 </form>
             </td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>
 </table>
+{% if session['user_type'] == 'admin' %}
 <a class="btn btn-success" href="{{ url_for('supply_bp.create_supply') }}">Añadir Nuevo Suministro</a>
+{% endif %}
 {% endblock %}

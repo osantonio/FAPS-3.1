@@ -6,6 +6,10 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SECRET_KEY = 'supersecretkey'
 
+# Configuración de sesiones
+SESSION_TYPE = 'filesystem'
+PERMANENT_SESSION_LIFETIME = 1800  # 30 minutos en segundos
+
 # Configuración de Celery
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'

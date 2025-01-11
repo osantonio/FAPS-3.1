@@ -1,46 +1,111 @@
 {% extends 'base.html' %}
 
-{% block title %}Create Resident{% endblock %}
+{% block title %}Crear Nuevo Residente{% endblock %}
 
 {% block content %}
-<h1>Create Resident</h1>
-<form method="POST" action="{{ url_for('resident_bp.create_resident') }}">
-    <div class="form-group">
-        <label for="name">Name</label>
-        <input type="text" class="form-control" id="name" name="name" required>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Crear Nuevo Residente</h2>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <!-- Información Personal -->
+                            <div class="col-md-6">
+                                <h4 class="mb-3">Información Personal</h4>
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="lastname" class="form-label">Apellido</label>
+                                    <input type="text" class="form-control" id="lastname" name="lastname" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="birthday_date" class="form-label">Fecha de Nacimiento</label>
+                                    <input type="date" class="form-control" id="birthday_date" name="birthday_date" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="no_identification" class="form-label">Número de Identificación</label>
+                                    <input type="text" class="form-control" id="no_identification" name="no_identification" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="profile_photo" class="form-label">Foto de Perfil</label>
+                                    <input type="file" class="form-control" id="profile_photo" name="profile_photo" accept="image/*">
+                                </div>
+                            </div>
+
+                            <!-- Información Médica -->
+                            <div class="col-md-6">
+                                <h4 class="mb-3">Información Médica</h4>
+                                <div class="mb-3">
+                                    <label for="health_status" class="form-label">Estado de Salud</label>
+                                    <select class="form-select" id="health_status" name="health_status" required>
+                                        <option value="">Seleccione un estado</option>
+                                        <option value="Estable">Estable</option>
+                                        <option value="En tratamiento">En tratamiento</option>
+                                        <option value="Requiere atención especial">Requiere atención especial</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="medical_conditions" class="form-label">Condiciones Médicas</label>
+                                    <textarea class="form-control" id="medical_conditions" name="medical_conditions" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="medications" class="form-label">Medicamentos</label>
+                                    <textarea class="form-control" id="medications" name="medications" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="medical_history" class="form-label">Historia Médica</label>
+                                    <textarea class="form-control" id="medical_history" name="medical_history" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="special_requirements" class="form-label">Requerimientos Especiales</label>
+                                    <textarea class="form-control" id="special_requirements" name="special_requirements" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Información de Cuenta -->
+                            <div class="col-12 mt-4">
+                                <h4 class="mb-3">Información de Cuenta</h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Correo Electrónico (opcional)</label>
+                                            <input type="email" class="form-control" id="email" name="email">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label">Contraseña</label>
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{{ url_for('resident_bp.list_residents') }}" class="btn btn-secondary me-md-2">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">Crear Residente</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="lastname">Last Name</label>
-        <input type="text" class="form-control" id="lastname" name="lastname" required>
-    </div>
-    <div class="form-group">
-        <label for="birthday_date">Birthday Date</label>
-        <input type="date" class="form-control" id="birthday_date" name="birthday_date" required>
-    </div>
-    <div class="form-group">
-        <label for="no_identification">No Identification</label>
-        <input type="text" class="form-control" id="no_identification" name="no_identification" required>
-    </div>
-    <div class="form-group">
-        <label for="health_status">Health Status</label>
-        <input type="text" class="form-control" id="health_status" name="health_status" required>
-    </div>
-    <div class="form-group">
-        <label for="medical_conditions">Medical Conditions</label>
-        <textarea class="form-control" id="medical_conditions" name="medical_conditions"></textarea>
-    </div>
-    <div class="form-group">
-        <label for="medications">Medications</label>
-        <textarea class="form-control" id="medications" name="medications"></textarea>
-    </div>
-    <div class="form-group">
-        <label for="medical_history">Medical History</label>
-        <textarea class="form-control" id="medical_history" name="medical_history"></textarea>
-    </div>
-    <div class="form-group">
-        <label for="special_requirements">Special Requirements</label>
-        <textarea class="form-control" id="special_requirements" name="special_requirements"></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">Create</button>
-</form>
+</div>
 {% endblock %}
