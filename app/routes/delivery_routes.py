@@ -19,6 +19,10 @@ def create_delivery():
             quantity = int(request.form['quantity'])
             date = datetime.now()
 
+            # Validar que la cantidad sea positiva
+            if quantity <= 0:
+                return "Error: La cantidad debe ser mayor que 0", 400
+
             # Obtener el suministro
             supply = Supply.query.get(supply_id)
             if not supply:
@@ -60,6 +64,11 @@ def edit_delivery(id):
     delivery = Delivery.query.get_or_404(id)
     if request.method == 'POST':
         try:
+            # Validar que la cantidad sea positiva
+            new_quantity = int(request.form['quantity'])
+            if new_quantity <= 0:
+                return "Error: La cantidad debe ser mayor que 0", 400
+
             # Guardar la cantidad anterior para restaurarla si algo falla
             old_quantity = delivery.quantity
             old_supply = delivery.supply

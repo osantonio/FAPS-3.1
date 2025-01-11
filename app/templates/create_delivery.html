@@ -1,30 +1,42 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Crear Entrega{% endblock %}
+{% block title %}Nueva Entrega - FAPS{% endblock %}
+
+{% block page_title %}Nueva Entrega{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('delivery_bp.list_deliveries') }}" class="text-decoration-none">Entregas</a></li>
+<li class="breadcrumb-item active">Nueva Entrega</li>
+{% endblock %}
 
 {% block content %}
-<h1>Crear Entrega</h1>
-<form method="POST" action="{{ url_for('delivery_bp.create_delivery') }}">
-    <div class="form-group">
-        <label for="supply_id">Suministro</label>
-        <select class="form-control" id="supply_id" name="supply_id" required>
-            {% for supply in supplies %}
-            <option value="{{ supply.id }}">{{ supply.name }}</option>
-            {% endfor %}
-        </select>
+<div class="container">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('delivery_bp.create_delivery') }}">
+                <div class="form-group">
+                    <label for="supply_id">Suministro</label>
+                    <select class="form-control" id="supply_id" name="supply_id" required>
+                        {% for supply in supplies %}
+                        <option value="{{ supply.id }}">{{ supply.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="resident_id">Residente</label>
+                    <select class="form-control" id="resident_id" name="resident_id" required>
+                        {% for resident in residents %}
+                        <option value="{{ resident.id }}">{{ resident.name }} {{ resident.lastname }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="quantity">Cantidad</label>
+                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Crear</button>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="resident_id">Residente</label>
-        <select class="form-control" id="resident_id" name="resident_id" required>
-            {% for resident in residents %}
-            <option value="{{ resident.id }}">{{ resident.name }} {{ resident.lastname }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="quantity">Cantidad</label>
-        <input type="number" class="form-control" id="quantity" name="quantity" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Crear</button>
-</form>
+</div>
 {% endblock %}

@@ -9,6 +9,8 @@ from .routes import register_blueprints
 app = Flask(__name__)
 app.config.from_object('config')
 app.config['DEBUG'] = True
+app.config['TEMPLATES_AUTO_RELOAD'] = True  # Recarga automática de templates
+app.jinja_env.auto_reload = True  # Recarga automática de Jinja2
 
 # Inicializar extensiones Flask
 db.init_app(app)

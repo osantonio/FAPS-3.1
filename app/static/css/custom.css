@@ -137,16 +137,20 @@ body {
     box-shadow: var(--shadow-sm);
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
 }
 
+.navbar .d-flex.align-items-center.flex-column {
+    align-items: flex-start !important;
+}
+
+/* Navbar Brand (Título) */
 .navbar-brand {
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    margin-bottom: 0.25rem !important;
+    line-height: 1.2;
 }
 
 .navbar-brand i {
@@ -230,20 +234,27 @@ body {
 /* Alert Styles */
 .alerts-container {
     position: fixed;
-    top: 1rem;
+    bottom: 1rem;
     right: 1rem;
     z-index: 1050;
-    max-width: 350px;
+    max-width: 400px;
 }
 
 .alert {
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    border: none;
-    box-shadow: var(--shadow-md);
-    display: flex;
-    align-items: center;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 .alert i {
@@ -384,4 +395,101 @@ body {
 
 .profile-photo:hover {
     transform: scale(1.05);
+}
+
+/* Estilos para el buscador */
+.search-container {
+    margin-bottom: 2rem;
+}
+
+.input-group .input-group-text {
+    background-color: transparent;
+    border-right: none;
+}
+
+.input-group .form-control {
+    border-left: none;
+}
+
+.input-group .form-control:focus {
+    border-color: var(--border-color);
+    box-shadow: none;
+}
+
+.input-group .form-control:focus + .input-group-text {
+    border-color: var(--border-color);
+}
+
+/* Animaciones para los productos */
+.product-item {
+    transition: all 0.3s ease-out;
+}
+
+.product-item:hover {
+    transform: translateY(-5px);
+}
+
+.product-item .card {
+    transition: all 0.3s ease-out;
+}
+
+.product-item:hover .card {
+    box-shadow: var(--shadow-md) !important;
+}
+
+/* Estilos para el filtro de categorías */
+.form-select {
+    border-radius: 0.375rem;
+    padding: 0.5rem 2.25rem 0.5rem 0.75rem;
+    background-position: right 0.75rem center;
+    transition: all 0.2s ease-in-out;
+}
+
+.form-select:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+}
+
+/* Mensaje de no resultados */
+#noResults {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease-out;
+}
+
+#noResults.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Header y Breadcrumbs */
+.content-header {
+    background-color: var(--bs-body-bg);
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+.content-header h1 {
+    color: var(--bs-heading-color);
+    font-weight: 600;
+}
+
+.breadcrumb {
+    font-size: 0.75rem;
+    margin: 0;
+    padding: 0;
+    opacity: 0.8;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    color: var(--text-secondary);
+    padding: 0 0.25rem;
+}
+
+.breadcrumb-item a {
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: var(--accent-color);
 }

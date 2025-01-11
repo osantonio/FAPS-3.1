@@ -1,41 +1,56 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Crear Usuario{% endblock %}
+{% block title %}Nuevo Usuario - FAPS{% endblock %}
+
+{% block page_title %}Nuevo Usuario{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('user_bp.list_users') }}" class="text-decoration-none">Usuarios</a></li>
+<li class="breadcrumb-item active">Nuevo Usuario</li>
+{% endblock %}
 
 {% block content %}
-<h1>Crear Usuario</h1>
-<form method="POST" action="{{ url_for('user_bp.create_user') }}">
-    <div class="form-group">
-        <label for="name">Nombre</label>
-        <input type="text" class="form-control" id="name" name="name" required>
+<div class="container">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('user_bp.create_user') }}">
+                <div class="form-group mb-3">
+                    <label for="name">Nombre</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="lastname">Apellido</label>
+                    <input type="text" class="form-control" id="lastname" name="lastname" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="birthday_date">Fecha de Nacimiento</label>
+                    <input type="date" class="form-control" id="birthday_date" name="birthday_date" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="no_identification">No. de Identificación</label>
+                    <input type="text" class="form-control" id="no_identification" name="no_identification" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="type_user">Tipo de Usuario</label>
+                    <select class="form-control" id="type_user" name="type_user" required>
+                        <option value="colaborador">Colaborador</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="email">Correo Electrónico</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="password">Contraseña</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{{ url_for('user_bp.list_users') }}" class="btn btn-secondary me-md-2">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Crear Usuario</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="lastname">Apellido</label>
-        <input type="text" class="form-control" id="lastname" name="lastname" required>
-    </div>
-    <div class="form-group">
-        <label for="birthday_date">Fecha de Nacimiento</label>
-        <input type="date" class="form-control" id="birthday_date" name="birthday_date" required>
-    </div>
-    <div class="form-group">
-        <label for="no_identification">No. de Identificación</label>
-        <input type="text" class="form-control" id="no_identification" name="no_identification" required>
-    </div>
-    <div class="form-group">
-        <label for="type_user">Tipo de Usuario</label>
-        <select class="form-control" id="type_user" name="type_user" required>
-            <option value="colaborador">Colaborador</option>
-            <option value="admin">Administrador</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="email">Correo Electrónico</label>
-        <input type="email" class="form-control" id="email" name="email" required>
-    </div>
-    <div class="form-group">
-        <label for="password">Contraseña</label>
-        <input type="password" class="form-control" id="password" name="password" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Crear</button>
-</form>
+</div>
 {% endblock %}

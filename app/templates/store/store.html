@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Tienda - FAPS{% endblock %}
+
+{% block page_title %}Tienda de Suministros{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item active">Tienda</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="searchInput" 
+                                       placeholder="Buscar por nombre, categoría o descripción..."
+                                       autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="categoryFilter">
+                                <option value="">Todas las categorías</option>
+                                <option value="higiene">Higiene</option>
+                                <option value="aseo general">Aseo General</option>
+                                <option value="alimento">Alimento</option>
+                                <option value="suplemento">Suplemento</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4" id="productsContainer">
+        {% for supply in supplies %}
+        <div class="col product-item" 
+             data-name="{{ supply.name|lower }}" 
+             data-category="{{ supply.category|lower }}"
+             data-description="{{ supply.description|lower if supply.description else '' }}">
+            <div class="card h-100 shadow-sm">
+                {% if supply.photo %}
+                <img src="{{ url_for('static', filename='uploads/supplies/' + supply.photo) }}" 
+                     class="card-img-top" alt="{{ supply.name }}"
+                     style="height: 180px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top d-flex align-items-center justify-content-center bg-light" 
+                     style="height: 180px;">
+                    <i class="bi bi-box-seam" style="font-size: 3rem; color: #6c757d;"></i>
+                </div>
+                {% endif %}
+                
+                <div class="card-body d-flex flex-column">
+                    <h6 class="card-title mb-2">{{ supply.name }}</h6>
+                    <div class="mt-auto">
+                        <span class="badge bg-secondary">{{ supply.category }}</span>
+                        <span class="badge bg-info">Stock: {{ supply.quantity }}</span>
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-transparent">
+                    <form class="add-to-cart-form" data-supply-id="{{ supply.id }}">
+                        <div class="input-group">
+                            <input type="number" class="form-control form-control-sm" 
+                                   name="quantity" value="1" min="1" 
+                                   max="{{ supply.quantity }}">
+                            <button class="btn btn-primary btn-sm" type="submit">
+                                <i class="bi bi-cart-plus"></i> Agregar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Mensaje cuando no hay resultados -->
+    <div id="noResults" class="alert alert-info text-center mt-4" style="display: none;">
+        <i class="bi bi-search me-2"></i>
+        No se encontraron productos que coincidan con tu búsqueda
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Funcionalidad del carrito
+    const forms = document.querySelectorAll('.add-to-cart-form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const supplyId = this.dataset.supplyId;
+            const quantity = parseInt(this.querySelector('input[name="quantity"]').value);
+            
+            fetch(`/cart/add/${supplyId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    quantity: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                window.location.reload();
+            });
+        });
+    });
+
+    // Funcionalidad de búsqueda
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const productsContainer = document.getElementById('productsContainer');
+    const noResults = document.getElementById('noResults');
+    const products = document.querySelectorAll('.product-item');
+
+    function filterProducts() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedCategory = categoryFilter.value.toLowerCase();
+        let hasVisibleProducts = false;
+
+        products.forEach(product => {
+            const name = product.dataset.name;
+            const category = product.dataset.category;
+            const description = product.dataset.description;
+            
+            const matchesSearch = name.includes(searchTerm) || 
+                                category.includes(searchTerm) || 
+                                description.includes(searchTerm);
+            const matchesCategory = !selectedCategory || category === selectedCategory;
+
+            if (matchesSearch && matchesCategory) {
+                product.style.display = '';
+                hasVisibleProducts = true;
+            } else {
+                product.style.display = 'none';
+            }
+        });
+
+        // Mostrar/ocultar mensaje de no resultados
+        noResults.style.display = hasVisibleProducts ? 'none' : 'block';
+    }
+
+    // Eventos para filtrar
+    searchInput.addEventListener('input', filterProducts);
+    categoryFilter.addEventListener('change', filterProducts);
+
+    // Animación suave al filtrar
+    products.forEach(product => {
+        product.style.transition = 'all 0.3s ease-out';
+    });
+});
+</script>
+{% endblock %} 

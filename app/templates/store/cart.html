@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Carrito - FAPS{% endblock %}
+
+{% block page_title %}Carrito de Compras{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{{ url_for('store_bp.store') }}" class="text-decoration-none">Tienda</a></li>
+<li class="breadcrumb-item active">Carrito</li>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Carrito de Entregas</h1>
+    
+    {% if cart_items %}
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Items en el Carrito</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Stock Disponible</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart_items %}
+                                <tr>
+                                    <td>
+                                        {% if item.supply.photo %}
+                                        <img src="{{ url_for('static', filename='uploads/supplies/' + item.supply.photo) }}" 
+                                             alt="{{ item.supply.name }}" class="img-thumbnail" 
+                                             style="width: 50px; height: 50px; object-fit: cover;">
+                                        {% endif %}
+                                        {{ item.supply.name }}
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control quantity-input" 
+                                               value="{{ item.quantity }}" min="1" 
+                                               max="{{ item.supply.quantity }}"
+                                               data-item-id="{{ item.id }}">
+                                    </td>
+                                    <td>{{ item.supply.quantity }}</td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm remove-item" 
+                                                data-item-id="{{ item.id }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Finalizar Entrega</h5>
+                    <form id="checkout-form">
+                        <div class="form-group">
+                            <label for="resident_id">Seleccionar Beneficiario</label>
+                            <select class="form-control" id="resident_id" name="resident_id" required>
+                                <option value="">Seleccione un beneficiario</option>
+                                {% for resident in residents %}
+                                <option value="{{ resident.id }}">
+                                    {{ resident.name }} {{ resident.lastname }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block mt-3">
+                            <i class="fas fa-check"></i> Realizar Entrega
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        El carrito está vacío. <a href="{{ url_for('store_bp.store') }}">Ir a la tienda</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Manejar eliminación de items
+    document.querySelectorAll('.remove-item').forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = this.dataset.itemId;
+            if (confirm('¿Está seguro de eliminar este item?')) {
+                fetch(`/cart/remove/${itemId}`, {
+                    method: 'POST'
+                })
+                .then(response => {
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    window.location.reload();
+                });
+            }
+        });
+    });
+
+    // Manejar checkout
+    const checkoutForm = document.getElementById('checkout-form');
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const residentId = document.getElementById('resident_id').value;
+            
+            if (!residentId) {
+                window.location.reload();
+                return;
+            }
+
+            fetch('/cart/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    resident_id: residentId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                window.location.reload();
+            });
+        });
+    }
+});
+</script>
+{% endblock %} 

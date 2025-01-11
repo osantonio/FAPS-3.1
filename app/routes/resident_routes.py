@@ -52,34 +52,11 @@ def create_resident():
                 special_requirements=special_requirements
             )
 
-            # Crear el usuario para el residente
-            password = request.form['password']
-            email = request.form.get('email')  # Email es opcional
-
-            new_user = User(
-                name=name,
-                lastname=lastname,
-                birthday_date=birthday_date,
-                no_identification=no_identification,
-                type_user='residente',
-                email=email
-            )
-            new_user.set_password(password)
-
-            # Guardar la foto de perfil si se proporcionó una
-            if 'profile_photo' in request.files:
-                file = request.files['profile_photo']
-                if file and file.filename != '':
-                    photo_path = save_profile_photo(file)
-                    if photo_path:
-                        new_user.profile_photo = photo_path
-
-            # Guardar ambos registros
+            # Guardar el registro del residente
             db.session.add(new_resident)
-            db.session.add(new_user)
             db.session.commit()
 
-            flash('Residente y usuario creados exitosamente', 'success')
+            flash('Residente creado exitosamente', 'success')
             return redirect(url_for('resident_bp.list_residents'))
         except Exception as e:
             db.session.rollback()

@@ -47,6 +47,9 @@ class Supply(db.Model):
     category = db.Column(db.String(100), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     entry_date = db.Column(db.Date, nullable=False)
+    photo = db.Column(db.String(255), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    price = db.Column(db.Float, nullable=True)  # Para mostrar el valor referencial
 
 # Modelo de entregas
 class Delivery(db.Model):
@@ -59,3 +62,14 @@ class Delivery(db.Model):
     # Relaciones
     supply = db.relationship('Supply', backref=db.backref('deliveries', lazy=True))
     resident = db.relationship('Resident', backref=db.backref('deliveries', lazy=True))
+
+# Modelo para items del carrito
+class CartItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    supply_id = db.Column(db.Integer, db.ForeignKey('supply.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    
+    # Relaciones
+    user = db.relationship('User', backref=db.backref('cart_items', lazy=True))
+    supply = db.relationship('Supply', backref=db.backref('cart_items', lazy=True))

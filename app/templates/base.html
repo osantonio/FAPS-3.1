@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,6 +51,12 @@
                     Entregas
                 </a>
             </li>
+            <li>
+                <a href="{{ url_for('store_bp.store') }}">
+                    <i class="bi bi-shop"></i>
+                    Tienda
+                </a>
+            </li>
         </ul>
     </div>
 
@@ -58,13 +64,43 @@
     <div class="main-content">
         <!-- Navbar -->
         <nav class="navbar">
-            <div class="d-flex align-items-center">
-                <button class="btn d-md-none me-3" id="sidebarToggle">
+            <div class="d-flex align-items-center flex-column">
+                <button class="btn d-md-none me-3 align-self-start" id="sidebarToggle">
                     <i class="bi bi-list"></i>
                 </button>
-                <div class="navbar-brand">{% block page_title %}{% endblock %}</div>
+                <div class="navbar-brand mb-0">{% block page_title %}{% endblock %}</div>
+                {% if request.endpoint != 'dashboard' %}
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="{{ url_for('dashboard') }}" class="text-decoration-none">
+                                <i class="bi bi-house-door"></i>
+                            </a>
+                        </li>
+                        {% block breadcrumbs %}{% endblock %}
+                    </ol>
+                </nav>
+                {% endif %}
             </div>
-            <div class="navbar-user">
+            <div class="navbar-user d-flex align-items-center">
+                <!-- Botón de modo oscuro -->
+                <button id="themeToggle" class="btn btn-link text-decoration-none me-3">
+                    <i class="bi bi-sun-fill theme-icon-active" data-theme-icon-active></i>
+                </button>
+                
+                <!-- Carrito -->
+                {% if session.get('user_id') %}
+                <a href="{{ url_for('store_bp.view_cart') }}" class="btn position-relative me-3">
+                    <i class="bi bi-cart3"></i>
+                    {% if session.get('cart_count', 0) > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ session.get('cart_count', 0) }}
+                    </span>
+                    {% endif %}
+                </a>
+                {% endif %}
+                
+                <!-- Menú de usuario -->
                 {% if session.get('user_id') %}
                     <div class="dropdown">
                         <button class="btn dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
@@ -126,14 +162,76 @@
             document.querySelector('.sidebar').classList.toggle('show');
         });
 
-        // Auto-dismiss alerts after 5 seconds
+        // Manejar alertas
         document.addEventListener('DOMContentLoaded', function() {
+            // Auto-dismiss alerts after 5 seconds
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(function(alert) {
-                setTimeout(function() {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                }, 5000);
+                // Añadir animación de salida antes de cerrar
+                const close = () => {
+                    alert.style.transition = 'all 0.3s ease-out';
+                    alert.style.transform = 'translateX(100%)';
+                    alert.style.opacity = '0';
+                    setTimeout(() => {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }, 300);
+                };
+
+                // Auto cerrar después de 5 segundos
+                setTimeout(close, 5000);
+
+                // Manejar el botón de cerrar
+                const closeButton = alert.querySelector('.btn-close');
+                if (closeButton) {
+                    closeButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        close();
+                    });
+                }
+            });
+
+            // Configuración del tema
+            const themeToggle = document.getElementById('themeToggle');
+            const html = document.documentElement;
+
+            // Función para actualizar el icono del tema
+            function updateThemeIcon(theme) {
+                const icon = themeToggle.querySelector('i');
+                if (theme === 'dark') {
+                    icon.classList.remove('bi-sun-fill');
+                    icon.classList.add('bi-moon-fill');
+                } else {
+                    icon.classList.remove('bi-moon-fill');
+                    icon.classList.add('bi-sun-fill');
+                }
+            }
+
+            // Función para establecer el tema
+            function setTheme(theme) {
+                html.setAttribute('data-bs-theme', theme);
+                localStorage.setItem('theme', theme);
+                updateThemeIcon(theme);
+            }
+
+            // Cargar tema guardado o usar el predeterminado
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const savedTheme = localStorage.getItem('theme');
+            const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+            setTheme(initialTheme);
+
+            // Manejar el cambio de tema
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = html.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                setTheme(newTheme);
+            });
+
+            // Escuchar cambios en las preferencias del sistema
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!localStorage.getItem('theme')) {
+                    setTheme(e.matches ? 'dark' : 'light');
+                }
             });
         });
     </script>

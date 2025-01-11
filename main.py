@@ -49,5 +49,18 @@ def dashboard():
         stats=stats
     )
 
+def entregar_producto(self, cantidad):
+    # Validar que la cantidad sea válida
+    if cantidad <= 0:
+        print("Error: La cantidad debe ser mayor a 0")
+        return False
+    
+    if cantidad > self.cantidad:
+        print(f"Error: No hay suficiente stock. Stock actual: {self.cantidad}")
+        return False
+        
+    self.cantidad -= cantidad
+    return True
+
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True, use_reloader=True)
