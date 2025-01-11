@@ -106,15 +106,45 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST'
                 })
                 .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al eliminar el item');
+                    }
                     window.location.reload();
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    window.location.reload();
+                    const alertsContainer = document.querySelector('.alerts-container') || createAlertsContainer();
+                    showAlert('Error al eliminar el item del carrito', 'danger');
                 });
             }
         });
     });
+
+    // Función para crear el contenedor de alertas si no existe
+    function createAlertsContainer() {
+        const container = document.createElement('div');
+        container.className = 'alerts-container';
+        document.body.appendChild(container);
+        return container;
+    }
+
+    // Función para mostrar alertas
+    function showAlert(message, type) {
+        const alertsContainer = document.querySelector('.alerts-container');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show`;
+        alert.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        alertsContainer.appendChild(alert);
+        
+        // Auto-cerrar después de 5 segundos
+        setTimeout(() => {
+            alert.classList.remove('show');
+            setTimeout(() => alert.remove(), 300);
+        }, 5000);
+    }
 
     // Manejar checkout
     const checkoutForm = document.getElementById('checkout-form');
@@ -124,29 +154,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const residentId = document.getElementById('resident_id').value;
             
             if (!residentId) {
-                window.location.reload();
+                showAlert('Por favor seleccione un beneficiario', 'warning');
                 return;
             }
-
-            fetch('/cart/checkout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    resident_id: residentId
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.redirect) {
-                    window.location.href = data.redirect;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                window.location.reload();
-            });
+            
+            // Continuar con el envío del formulario
+            this.submit();
         });
     }
 });
