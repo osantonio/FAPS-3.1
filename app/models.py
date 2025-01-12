@@ -40,6 +40,14 @@ class Resident(db.Model):
     medical_history = db.Column(db.Text, nullable=True)
     special_requirements = db.Column(db.Text, nullable=True)
 
+# Modelo para tipos de tienda
+class StoreType(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    can_distribute_to_beneficiaries = db.Column(db.Boolean, default=True)
+    can_distribute_to_store = db.Column(db.Boolean, default=False)
+    can_distribute_to_warehouse = db.Column(db.Boolean, default=False)
+
 # Modelo de suministros
 class Supply(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -50,6 +58,10 @@ class Supply(db.Model):
     photo = db.Column(db.String(255), nullable=True)
     description = db.Column(db.Text, nullable=True)
     price = db.Column(db.Float, nullable=True)  # Para mostrar el valor referencial
+    store_type_id = db.Column(db.Integer, db.ForeignKey('store_type.id'), nullable=False)
+    
+    # Relación con StoreType
+    store_type = db.relationship('StoreType', backref=db.backref('supplies', lazy=True))
 
 # Modelo de entregas
 class Delivery(db.Model):

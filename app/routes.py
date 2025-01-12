@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from .extensions import db
 from .models import User, Resident, Supply, Delivery
 from datetime import datetime
+from .routes.main_routes import main_bp
+from .routes.auth_routes import auth_bp
 
 # Definir Blueprints
 user_bp = Blueprint('user_bp', __name__)
@@ -123,6 +125,8 @@ def delete_resident(id):
 
 # Registrar Blueprints
 def register_blueprints(app):
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(main_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(resident_bp)
     app.register_blueprint(supply_bp)

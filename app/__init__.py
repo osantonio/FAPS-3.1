@@ -4,7 +4,6 @@ from flask_talisman import Talisman
 from flask_migrate import Migrate
 from .extensions import db, bcrypt
 from .models import User
-from .routes import register_blueprints
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -27,12 +26,19 @@ talisman = Talisman(
 # Inicializar Flask-Migrate
 migrate = Migrate(app, db)
 
-# Registrar Blueprints
-register_blueprints(app)
+# Importar y registrar blueprints
+from .routes.auth_routes import auth_bp
+from .routes.main_routes import main_bp
+from .routes.store_routes import store_bp
+from .routes import user_bp, resident_bp, supply_bp, delivery_bp
 
-# Importar rutas después de crear la aplicación
-from . import routes
-import main  # Importar main.py que contiene la ruta del dashboard
+app.register_blueprint(auth_bp)
+app.register_blueprint(main_bp)
+app.register_blueprint(store_bp)
+app.register_blueprint(user_bp)
+app.register_blueprint(resident_bp)
+app.register_blueprint(supply_bp)
+app.register_blueprint(delivery_bp)
 
 # Crear todas las tablas en la base de datos
 with app.app_context():

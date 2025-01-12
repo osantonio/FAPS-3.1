@@ -3,121 +3,1151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}FAPS{% endblock %}</title>
+    <meta http-equiv="Accept-CH" content="DPR, Width, Viewport-Width">
+    <title>FAPS - Sistema de Gestión</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
-    {% block head %}{% endblock %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2D3436;
+            --secondary-color: #636E72;
+            --accent-pink: #FAB1A0;
+            --accent-blue: #74B9FF;
+            --accent-green: #55EFC4;
+            --accent-yellow: #FFEAA7;
+            --bg-color: #F5F6FA;
+            --card-bg: #FFFFFF;
+            --sidebar-width: 250px;
+            --navbar-height: 70px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            min-height: 100vh;
+            letter-spacing: 0.3px;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: var(--card-bg);
+            box-shadow: 2px 0 4px rgba(0,0,0,0.05);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            padding: 1rem;
+        }
+
+        .sidebar-logo {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .sidebar-logo a {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--secondary-color);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background: var(--bg-color);
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu i {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Top Navbar Styles */
+        .top-navbar {
+            height: var(--navbar-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .navbar-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .navbar-title i {
+            font-size: 1.3rem;
+            color: var(--accent-blue);
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            height: 100%;
+            padding: 0.5rem 0;
+        }
+
+        /* Cart Icon Styles */
+        .cart-icon {
+            position: relative;
+            width: 45px;
+            height: 45px;
+            color: var(--secondary-color);
+            transition: all 0.3s ease;
+            background: var(--bg-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .cart-icon:hover {
+            color: var(--primary-color);
+            background: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .cart-icon i {
+            font-size: 1.2rem;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent-pink);
+            color: var(--primary-color);
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* User Menu Styles */
+        .dropdown {
+            height: 45px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .dropdown .btn {
+            height: 100%;
+            padding: 0 1.2rem;
+            background: var(--bg-color);
+            border: none;
+            border-radius: 12px;
+            color: var(--primary-color);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .dropdown .btn:hover {
+            background: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(116,185,255,0.2);
+        }
+
+        .dropdown .btn i {
+            font-size: 1.2rem;
+        }
+
+        .dropdown-menu {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 0.5rem);
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 0.8rem;
+            min-width: 220px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+
+        .dropdown.active .dropdown-menu {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-color);
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .dropdown-item i {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--card-bg);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            font-weight: 600;
+        }
+
+        /* Button Styles */
+        .btn {
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            border: none;
+        }
+
+        .btn-success {
+            background-color: var(--accent-green);
+            border: none;
+        }
+
+        .btn-warning {
+            background-color: var(--accent-yellow);
+            border: none;
+            color: var(--primary-color);
+        }
+
+        .btn-danger {
+            background-color: var(--accent-pink);
+            border: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Form Styles */
+        .form-control {
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 10px 16px;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(116,185,255,0.1);
+        }
+
+        /* Alert Styles */
+        .alert {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .alert-success {
+            background-color: var(--accent-green);
+            color: var(--primary-color);
+        }
+
+        .alert-danger {
+            background-color: var(--accent-pink);
+            color: var(--primary-color);
+        }
+
+        .alert-warning {
+            background-color: var(--accent-yellow);
+            color: var(--primary-color);
+        }
+
+        .alert-info {
+            background-color: var(--accent-blue);
+            color: var(--primary-color);
+        }
+
+        /* Table Styles */
+        .table {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table th {
+            background: rgba(0,0,0,0.02);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary-color);
+            border-radius: 4px;
+        }
+
+        /* Utilities */
+        .shadow-sm {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+        }
+
+        .rounded-lg {
+            border-radius: 12px !important;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-toggle {
+                display: block !important;
+            }
+
+            .top-navbar {
+                justify-content: space-between;
+            }
+
+            .navbar-user {
+                gap: 1rem;
+            }
+        }
+
+        /* Image Support */
+        .img-fluid {
+            max-width: 100%;
+            height: auto;
+        }
+
+        picture {
+            display: block;
+            width: 100%;
+        }
+
+        picture source {
+            width: 100%;
+            height: auto;
+        }
+
+        /* Summary Cards Styles */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            border-color: var(--accent-blue);
+        }
+
+        .summary-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .summary-icon.users {
+            background: rgba(116,185,255,0.1);
+            color: var(--accent-blue);
+        }
+
+        .summary-icon.residents {
+            background: rgba(85,239,196,0.1);
+            color: var(--accent-green);
+        }
+
+        .summary-icon.supplies {
+            background: rgba(250,177,160,0.1);
+            color: var(--accent-pink);
+        }
+
+        .summary-content {
+            flex-grow: 1;
+        }
+
+        .summary-title {
+            color: var(--secondary-color);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-value {
+            color: var(--primary-color);
+            font-size: 1.75rem;
+            font-weight: 600;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-change {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--accent-green);
+        }
+
+        .summary-change.positive {
+            color: var(--accent-green);
+        }
+
+        .summary-change.negative {
+            color: var(--accent-pink);
+        }
+
+        .summary-change i {
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .summary-card {
+                padding: 1.25rem;
+            }
+
+            .summary-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.25rem;
+            }
+
+            .summary-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Store Styles */
+        .store-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            position: relative;
+        }
+
+        .search-input i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        .search-input input {
+            padding-left: 2.8rem;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: var(--card-bg);
+            font-size: 0.95rem;
+        }
+
+        .search-input input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(116,185,255,0.1);
+        }
+
+        .no-results {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            text-align: center;
+            color: var(--secondary-color);
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-top: 2rem;
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .no-results p {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .store-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 1rem 0;
+        }
+
+        .store-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.05);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .store-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            border-color: var(--accent-blue);
+        }
+
+        .store-card-image {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%; /* Aspect ratio 1:1 */
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+
+        .store-card-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .store-card:hover .store-card-image img {
+            transform: scale(1.05);
+        }
+
+        .store-card-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .store-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .store-card-stock {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(85,239,196,0.1);
+            color: var(--accent-green);
+            font-size: 0.875rem;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        .store-card-stock i {
+            font-size: 1rem;
+        }
+
+        .store-card-stock.out-of-stock {
+            background: rgba(250,177,160,0.1);
+            color: var(--accent-pink);
+        }
+
+        .btn-add-cart {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--accent-blue);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            margin-top: auto;
+        }
+
+        .btn-add-cart:hover {
+            background: var(--accent-green);
+            transform: translateY(-2px);
+            color: var(--primary-color);
+        }
+
+        .btn-add-cart.disabled {
+            background: var(--bg-color);
+            color: var(--secondary-color);
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .btn-add-cart i {
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .store-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-container {
+                max-width: 100%;
+            }
+
+            .store-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+
+            .store-card-content {
+                padding: 1rem;
+            }
+
+            .store-card-title {
+                font-size: 1rem;
+            }
+        }
+
+        /* Notifications */
+        .notifications-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 350px;
+        }
+
+        .notification {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--accent-pink);
+        }
+
+        .notification i {
+            font-size: 1.2rem;
+        }
+
+        .notification.success i {
+            color: var(--accent-green);
+        }
+
+        .notification.error i {
+            color: var(--accent-pink);
+        }
+
+        /* Quantity Selector */
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-color);
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: var(--card-bg);
+            color: var(--primary-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quantity-btn:hover {
+            background: var(--accent-blue);
+            color: var(--card-bg);
+        }
+
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 6px;
+            padding: 0.3rem;
+            font-size: 0.9rem;
+            background: var(--card-bg);
+        }
+
+        .quantity-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(116,185,255,0.1);
+        }
+
+        /* Store Card Modifications */
+        .store-card-stock {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(85,239,196,0.1);
+            color: var(--accent-green);
+            font-size: 0.875rem;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        .store-card-stock i {
+            font-size: 1rem;
+        }
+
+        .store-card-stock.out-of-stock {
+            background: rgba(250,177,160,0.1);
+            color: var(--accent-pink);
+        }
+
+        /* Cart Styles */
+        .cart-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .cart-item-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cart-item-content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cart-item-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .btn-remove {
+            background: none;
+            border: none;
+            color: var(--accent-pink);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-remove:hover {
+            background: var(--accent-pink);
+            color: var(--card-bg);
+            transform: scale(1.1);
+        }
+
+        .cart-summary {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: flex-end;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .btn-checkout {
+            background: var(--accent-green);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(85,239,196,0.2);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .empty-cart i {
+            font-size: 4rem;
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .empty-cart h3 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-cart p {
+            color: var(--secondary-color);
+            margin-bottom: 2rem;
+        }
+
+        .btn-back-to-store {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--accent-blue);
+            color: var(--primary-color);
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-back-to-store:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(116,185,255,0.2);
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .cart-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .cart-item-image {
+                width: 100%;
+                height: 200px;
+            }
+
+            .cart-item-content {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .cart-summary {
+                padding: 1rem;
+            }
+
+            .btn-checkout {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-logo">
-            <a href="{{ url_for('dashboard') }}">FAPS</a>
+            <a href="{{ url_for('main_bp.dashboard') }}">FAPS</a>
         </div>
         <ul class="sidebar-menu">
-            <li>
-                <a href="{{ url_for('dashboard') }}">
-                    <i class="bi bi-grid-1x2-fill"></i>
-                    Dashboard
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('user_bp.list_users') }}">
-                    <i class="bi bi-people-fill"></i>
-                    Usuarios
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('resident_bp.list_residents') }}">
-                    <i class="bi bi-house-heart-fill"></i>
-                    Residentes
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('supply_bp.list_supplies') }}">
-                    <i class="bi bi-box-seam-fill"></i>
-                    Suministros
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('delivery_bp.list_deliveries') }}">
-                    <i class="bi bi-truck"></i>
-                    Entregas
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('store_bp.store') }}">
-                    <i class="bi bi-shop"></i>
-                    Tienda
-                </a>
-            </li>
+            {% if session.get('user_id') %}
+                <li>
+                    <a href="{{ url_for('main_bp.dashboard') }}">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('resident_bp.list_residents') }}">
+                        <i class="fas fa-users"></i>
+                        Residentes
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('supply_bp.list_supplies') }}">
+                        <i class="fas fa-box"></i>
+                        Suministros
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('delivery_bp.list_deliveries') }}">
+                        <i class="fas fa-truck"></i>
+                        Entregas
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('store_bp.store') }}">
+                        <i class="fas fa-store"></i>
+                        Tienda
+                    </a>
+                </li>
+                {% if session.get('user_type') == 'admin' %}
+                    <li>
+                        <a href="{{ url_for('user_bp.list_users') }}">
+                            <i class="fas fa-user-cog"></i>
+                            Usuarios
+                        </a>
+                    </li>
+                {% endif %}
+            {% endif %}
         </ul>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Navbar -->
-        <nav class="navbar">
-            <div class="d-flex align-items-center flex-column">
-                <button class="btn d-md-none me-3 align-self-start" id="sidebarToggle">
-                    <i class="bi bi-list"></i>
-                </button>
-                <div class="navbar-brand mb-0">{% block page_title %}{% endblock %}</div>
-                {% if request.endpoint != 'dashboard' %}
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item">
-                            <a href="{{ url_for('dashboard') }}" class="text-decoration-none">
-                                <i class="bi bi-house-door"></i>
-                            </a>
-                        </li>
-                        {% block breadcrumbs %}{% endblock %}
-                    </ol>
-                </nav>
+        <!-- Top Navbar -->
+        <div class="top-navbar">
+            <div class="navbar-title d-none d-md-flex">
+                {% if request.endpoint %}
+                    {% if 'dashboard' in request.endpoint %}
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard
+                    {% elif 'resident' in request.endpoint %}
+                        <i class="fas fa-users"></i>
+                        Residentes
+                    {% elif 'supply' in request.endpoint %}
+                        <i class="fas fa-box"></i>
+                        Suministros
+                    {% elif 'delivery' in request.endpoint %}
+                        <i class="fas fa-truck"></i>
+                        Entregas
+                    {% elif 'store' in request.endpoint %}
+                        <i class="fas fa-store"></i>
+                        Tienda
+                    {% elif 'user' in request.endpoint %}
+                        <i class="fas fa-user-cog"></i>
+                        Usuarios
+                    {% else %}
+                        <i class="fas fa-home"></i>
+                        FAPS
+                    {% endif %}
                 {% endif %}
             </div>
-            <div class="navbar-user d-flex align-items-center">
-                <!-- Botón de modo oscuro -->
-                <button id="themeToggle" class="btn btn-link text-decoration-none me-3">
-                    <i class="bi bi-sun-fill theme-icon-active" data-theme-icon-active></i>
-                </button>
-                
-                <!-- Carrito -->
+            <button class="btn mobile-toggle d-md-none" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="navbar-user">
                 {% if session.get('user_id') %}
-                <a href="{{ url_for('store_bp.view_cart') }}" class="btn position-relative me-3">
-                    <i class="bi bi-cart3"></i>
-                    {% if session.get('cart_count', 0) > 0 %}
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        {{ session.get('cart_count', 0) }}
-                    </span>
-                    {% endif %}
-                </a>
-                {% endif %}
-                
-                <!-- Menú de usuario -->
-                {% if session.get('user_id') %}
+                    <a href="{{ url_for('store_bp.view_cart') }}" class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        {% if session.get('cart_count', 0) > 0 %}
+                            <span class="cart-badge">{{ session.get('cart_count', 0) }}</span>
+                        {% endif %}
+                    </a>
                     <div class="dropdown">
-                        <button class="btn dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle"></i>
+                        <button class="btn" type="button">
+                            <i class="fas fa-user-circle"></i>
                             {{ session.get('user_type', '') }}
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-lg" aria-labelledby="userMenu">
+                        <ul class="dropdown-menu">
                             <li>
                                 <a class="dropdown-item" href="{{ url_for('user_bp.profile') }}">
-                                    <i class="bi bi-person-lines-fill"></i>
-                                    Mi Perfil
+                                    <i class="fas fa-user"></i>
+                                    Perfil
                                 </a>
                             </li>
-                            <li><hr class="dropdown-divider"></li>
                             <li>
-                                <a class="dropdown-item text-danger" href="{{ url_for('auth_bp.logout') }}">
-                                    <i class="bi bi-box-arrow-right"></i>
+                                <a class="dropdown-item" href="{{ url_for('auth_bp.logout') }}">
+                                    <i class="fas fa-sign-out-alt"></i>
                                     Cerrar Sesión
                                 </a>
                             </li>
@@ -125,116 +1155,113 @@
                     </div>
                 {% endif %}
             </div>
-        </nav>
+        </div>
 
         <!-- Alerts -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="alerts-container">
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                            {% if category == 'success' %}
-                                <i class="bi bi-check-circle-fill me-2"></i>
-                            {% elif category == 'danger' %}
-                                <i class="bi bi-exclamation-circle-fill me-2"></i>
-                            {% elif category == 'warning' %}
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            {% endif %}
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% endfor %}
-                </div>
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
             {% endif %}
         {% endwith %}
 
         <!-- Main Content Area -->
-        <div class="content-wrapper">
-            {% block content %}{% endblock %}
-        </div>
+        {% block content %}
+            {% if 'dashboard' in request.endpoint %}
+                <div class="summary-cards">
+                    <!-- Tarjeta de Usuarios -->
+                    <div class="summary-card">
+                        <div class="summary-icon users">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="summary-content">
+                            <div class="summary-title">Total Usuarios</div>
+                            <div class="summary-value">{{ total_users }}</div>
+                            <div class="summary-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>12% este mes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta de Residentes -->
+                    <div class="summary-card">
+                        <div class="summary-icon residents">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="summary-content">
+                            <div class="summary-title">Total Residentes</div>
+                            <div class="summary-value">{{ total_residents }}</div>
+                            <div class="summary-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>8% este mes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta de Suministros -->
+                    <div class="summary-card">
+                        <div class="summary-icon supplies">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="summary-content">
+                            <div class="summary-title">Total Suministros</div>
+                            <div class="summary-value">{{ total_supplies }}</div>
+                            <div class="summary-change negative">
+                                <i class="fas fa-arrow-down"></i>
+                                <span>3% este mes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% block dashboard_content %}{% endblock %}
+        {% endblock %}
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS y Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+    
     <script>
         // Toggle Sidebar on Mobile
         document.getElementById('sidebarToggle')?.addEventListener('click', function() {
             document.querySelector('.sidebar').classList.toggle('show');
         });
 
-        // Manejar alertas
+        // Auto-ocultar alertas
         document.addEventListener('DOMContentLoaded', function() {
-            // Auto-dismiss alerts after 5 seconds
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(function(alert) {
-                // Añadir animación de salida antes de cerrar
-                const close = () => {
-                    alert.style.transition = 'all 0.3s ease-out';
-                    alert.style.transform = 'translateX(100%)';
-                    alert.style.opacity = '0';
-                    setTimeout(() => {
-                        const bsAlert = new bootstrap.Alert(alert);
-                        bsAlert.close();
-                    }, 300);
-                };
-
-                // Auto cerrar después de 5 segundos
-                setTimeout(close, 5000);
-
-                // Manejar el botón de cerrar
-                const closeButton = alert.querySelector('.btn-close');
-                if (closeButton) {
-                    closeButton.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        close();
-                    });
-                }
+                setTimeout(function() {
+                    const closeButton = alert.querySelector('.btn-close');
+                    if (closeButton) {
+                        closeButton.click();
+                    }
+                }, 5000);
             });
 
-            // Configuración del tema
-            const themeToggle = document.getElementById('themeToggle');
-            const html = document.documentElement;
+            // Manejo del dropdown
+            const dropdown = document.querySelector('.dropdown');
+            const dropdownButton = dropdown?.querySelector('.btn');
 
-            // Función para actualizar el icono del tema
-            function updateThemeIcon(theme) {
-                const icon = themeToggle.querySelector('i');
-                if (theme === 'dark') {
-                    icon.classList.remove('bi-sun-fill');
-                    icon.classList.add('bi-moon-fill');
-                } else {
-                    icon.classList.remove('bi-moon-fill');
-                    icon.classList.add('bi-sun-fill');
-                }
+            if (dropdown && dropdownButton) {
+                dropdownButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('active');
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!dropdown.contains(e.target)) {
+                        dropdown.classList.remove('active');
+                    }
+                });
             }
-
-            // Función para establecer el tema
-            function setTheme(theme) {
-                html.setAttribute('data-bs-theme', theme);
-                localStorage.setItem('theme', theme);
-                updateThemeIcon(theme);
-            }
-
-            // Cargar tema guardado o usar el predeterminado
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const savedTheme = localStorage.getItem('theme');
-            const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
-            setTheme(initialTheme);
-
-            // Manejar el cambio de tema
-            themeToggle.addEventListener('click', () => {
-                const currentTheme = html.getAttribute('data-bs-theme');
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                setTheme(newTheme);
-            });
-
-            // Escuchar cambios en las preferencias del sistema
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-                if (!localStorage.getItem('theme')) {
-                    setTheme(e.matches ? 'dark' : 'light');
-                }
-            });
         });
     </script>
-    {% block scripts %}{% endblock %}
 </body>
 </html>

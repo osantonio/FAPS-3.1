@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.extensions import db
-from app.models import Supply
+from app.models import Supply, StoreType
 from datetime import datetime
 import os
 from werkzeug.utils import secure_filename
@@ -37,6 +37,7 @@ def create_supply():
             quantity = int(request.form['quantity'])
             category = request.form['category']
             description = request.form.get('description', '')
+            store_type_id = int(request.form['store_type'])
             
             # Manejar la foto
             photo = request.files.get('photo')
@@ -48,7 +49,8 @@ def create_supply():
                 category=category,
                 entry_date=datetime.now(),
                 description=description,
-                photo=photo_filename
+                photo=photo_filename,
+                store_type_id=store_type_id
             )
             
             db.session.add(new_supply)
@@ -60,30 +62,31 @@ def create_supply():
             db.session.rollback()
             flash(f'Error al crear el suministro: {str(e)}', 'danger')
             
-    return render_template('create_supply.html')
+    store_types = StoreType.query.all()
+    return render_template('create_supply.html', store_types=store_types)
 
 @supply_bp.route('/admin/supplies/edit/<int:id>', methods=['GET', 'POST'])
 def edit_supply(id):
     supply = Supply.query.get_or_404(id)
+    
     if request.method == 'POST':
         try:
             supply.name = request.form['name']
             supply.quantity = int(request.form['quantity'])
             supply.category = request.form['category']
             supply.description = request.form.get('description', '')
+            supply.store_type_id = int(request.form['store_type'])
             
             # Manejar la foto
             photo = request.files.get('photo')
             if photo:
-                # Si hay una foto anterior, eliminarla
-                if supply.photo:
-                    old_photo_path = os.path.join('app', 'static', 'uploads', 'supplies', supply.photo)
-                    if os.path.exists(old_photo_path):
-                        os.remove(old_photo_path)
-                
-                # Guardar la nueva foto
                 photo_filename = save_supply_photo(photo)
                 if photo_filename:
+                    # Eliminar foto anterior si existe
+                    if supply.photo:
+                        old_photo_path = os.path.join('app', 'static', 'uploads', 'supplies', supply.photo)
+                        if os.path.exists(old_photo_path):
+                            os.remove(old_photo_path)
                     supply.photo = photo_filename
             
             db.session.commit()
@@ -93,8 +96,9 @@ def edit_supply(id):
         except Exception as e:
             db.session.rollback()
             flash(f'Error al actualizar el suministro: {str(e)}', 'danger')
-            
-    return render_template('edit_supply.html', supply=supply)
+    
+    store_types = StoreType.query.all()
+    return render_template('edit_supply.html', supply=supply, store_types=store_types)
 
 @supply_bp.route('/admin/supplies/delete/<int:id>', methods=['POST'])
 def delete_supply(id):

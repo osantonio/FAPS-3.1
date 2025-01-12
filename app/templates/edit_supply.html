@@ -3,29 +3,101 @@
 {% block title %}Editar Suministro{% endblock %}
 
 {% block content %}
-<h1>Editar Suministro</h1>
-<form method="POST" action="{{ url_for('supply_bp.edit_supply', id=supply.id) }}">
-    <div class="form-group">
-        <label for="name">Nombre</label>
-        <input type="text" class="form-control" id="name" name="name" value="{{ supply.name }}" required>
+<div class="container">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="mb-4">Editar Suministro</h2>
+            <form method="POST" action="{{ url_for('supply_bp.edit_supply', id=supply.id) }}" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group mb-3">
+                            <label for="name">Nombre</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ supply.name }}" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="quantity">Cantidad</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" value="{{ supply.quantity }}" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="category">Categoría</label>
+                            <select class="form-control" id="category" name="category" required>
+                                <option value="higiene" {% if supply.category == 'higiene' %}selected{% endif %}>Higiene</option>
+                                <option value="aseo general" {% if supply.category == 'aseo general' %}selected{% endif %}>Aseo General</option>
+                                <option value="alimento" {% if supply.category == 'alimento' %}selected{% endif %}>Alimento</option>
+                                <option value="suplemento" {% if supply.category == 'suplemento' %}selected{% endif %}>Suplemento</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="store_type">Tipo de Tienda</label>
+                            <select class="form-control" id="store_type" name="store_type" required>
+                                {% for store_type in store_types %}
+                                <option value="{{ store_type.id }}" {% if supply.store_type_id == store_type.id %}selected{% endif %}>
+                                    {{ store_type.name|title }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="description">Descripción</label>
+                            <textarea class="form-control" id="description" name="description">{{ supply.description }}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="photo">Foto del Producto</label>
+                                    <div class="current-image mb-3">
+                                        {% if supply.photo %}
+                                            <picture>
+                                                <source srcset="{{ url_for('static', filename=supply.photo|replace('.jpg', '.webp')|replace('.png', '.webp')) }}" type="image/webp">
+                                                <source srcset="{{ url_for('static', filename=supply.photo) }}" type="image/jpeg">
+                                                <img src="{{ url_for('static', filename=supply.photo) }}" alt="{{ supply.name }}" class="img-fluid rounded">
+                                            </picture>
+                                        {% else %}
+                                            <img src="{{ url_for('static', filename='img/default-product.jpg') }}" alt="Imagen por defecto" class="img-fluid rounded">
+                                        {% endif %}
+                                    </div>
+                                    <div class="custom-file">
+                                        <input type="file" class="form-control" id="photo" name="photo" accept="image/*,.webp">
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        Formatos permitidos: JPG, PNG, WebP.<br>
+                                        Tamaño recomendado: 800x800 píxeles.<br>
+                                        Tamaño máximo: 2MB
+                                    </small>
+                                    <div class="mt-3" id="imagePreview" style="display: none;">
+                                        <h6>Vista Previa:</h6>
+                                        <img src="" alt="Vista previa" class="img-fluid rounded">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <a href="{{ url_for('supply_bp.list_supplies') }}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="quantity">Cantidad</label>
-        <input type="number" class="form-control" id="quantity" name="quantity" value="{{ supply.quantity }}" required>
-    </div>
-    <div class="form-group">
-        <label for="category">Categoría</label>
-        <select class="form-control" id="category" name="category" required>
-            <option value="higiene" {% if supply.category == 'higiene' %}selected{% endif %}>Higiene</option>
-            <option value="aseo general" {% if supply.category == 'aseo general' %}selected{% endif %}>Aseo General</option>
-            <option value="alimento" {% if supply.category == 'alimento' %}selected{% endif %}>Alimento</option>
-            <option value="suplemento" {% if supply.category == 'suplemento' %}selected{% endif %}>Suplemento</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="description">Descripción</label>
-        <textarea class="form-control" id="description" name="description">{{ supply.description }}</textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-</form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('photo').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('imagePreview');
+            preview.style.display = 'block';
+            preview.querySelector('img').src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+});
+</script>
 {% endblock %}

@@ -1,173 +1,173 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Tienda - FAPS{% endblock %}
-
-{% block page_title %}Tienda de Suministros{% endblock %}
-
-{% block breadcrumbs %}
-<li class="breadcrumb-item active">Tienda</li>
-{% endblock %}
+{% block title %}Tienda de Suministros - FAPS{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-search"></i>
-                                </span>
-                                <input type="text" 
-                                       class="form-control" 
-                                       id="searchInput" 
-                                       placeholder="Buscar por nombre, categoría o descripción..."
-                                       autocomplete="off">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <select class="form-select" id="categoryFilter">
-                                <option value="">Todas las categorías</option>
-                                <option value="higiene">Higiene</option>
-                                <option value="aseo general">Aseo General</option>
-                                <option value="alimento">Alimento</option>
-                                <option value="suplemento">Suplemento</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+<div class="container">
+    <div class="store-header mb-4">
+        <h2><i class="fas fa-store me-2"></i>Tienda de Suministros</h2>
+        <div class="search-container">
+            <div class="search-input">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar productos..." class="form-control">
             </div>
         </div>
     </div>
     
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4" id="productsContainer">
+    <div class="store-grid" id="storeGrid">
         {% for supply in supplies %}
-        <div class="col product-item" 
-             data-name="{{ supply.name|lower }}" 
-             data-category="{{ supply.category|lower }}"
-             data-description="{{ supply.description|lower if supply.description else '' }}">
-            <div class="card h-100 shadow-sm">
+        <div class="store-card" data-name="{{ supply.name|lower }}" data-category="{{ supply.category|lower if supply.category else '' }}">
+            <div class="store-card-image">
                 {% if supply.photo %}
-                <img src="{{ url_for('static', filename='uploads/supplies/' + supply.photo) }}" 
-                     class="card-img-top" alt="{{ supply.name }}"
-                     style="height: 180px; object-fit: cover;">
+                    <picture>
+                        <source srcset="{{ url_for('static', filename='uploads/supplies/' + supply.photo|replace('.jpg', '.webp')|replace('.png', '.webp')) }}" type="image/webp">
+                        <source srcset="{{ url_for('static', filename='uploads/supplies/' + supply.photo) }}" type="image/jpeg">
+                        <img src="{{ url_for('static', filename='uploads/supplies/' + supply.photo) }}" alt="{{ supply.name }}" loading="lazy">
+                    </picture>
                 {% else %}
-                <div class="card-img-top d-flex align-items-center justify-content-center bg-light" 
-                     style="height: 180px;">
-                    <i class="bi bi-box-seam" style="font-size: 3rem; color: #6c757d;"></i>
-                </div>
+                    <img src="{{ url_for('static', filename='img/default-product.jpg') }}" alt="Imagen por defecto" loading="lazy">
                 {% endif %}
-                
-                <div class="card-body d-flex flex-column">
-                    <h6 class="card-title mb-2">{{ supply.name }}</h6>
-                    <div class="mt-auto">
-                        <span class="badge bg-secondary">{{ supply.category }}</span>
-                        <span class="badge bg-info">Stock: {{ supply.quantity }}</span>
-                    </div>
+            </div>
+            <div class="store-card-content">
+                <h3 class="store-card-title">{{ supply.name }}</h3>
+                <div class="store-card-info">
+                    <span class="store-card-category">{{ supply.category|title }}</span>
+                    <span class="store-card-type">{{ supply.store_type.name|title }}</span>
                 </div>
-                
-                <div class="card-footer bg-transparent">
-                    <form class="add-to-cart-form" data-supply-id="{{ supply.id }}">
-                        <div class="input-group">
-                            <input type="number" class="form-control form-control-sm" 
-                                   name="quantity" value="1" min="1" 
-                                   max="{{ supply.quantity }}">
-                            <button class="btn btn-primary btn-sm" type="submit">
-                                <i class="bi bi-cart-plus"></i> Agregar
-                            </button>
-                        </div>
-                    </form>
+                <div class="store-card-stock {% if supply.quantity <= 0 %}out-of-stock{% endif %}">
+                    {% if supply.quantity > 0 %}
+                        <i class="fas fa-box"></i>
+                        <span>{{ supply.quantity }} unidades disponibles</span>
+                    {% else %}
+                        <i class="fas fa-times-circle"></i>
+                        <span>Agotado</span>
+                    {% endif %}
                 </div>
+                <button type="button" 
+                        class="btn-add-cart {% if supply.quantity <= 0 %}disabled{% endif %}" 
+                        data-supply-id="{{ supply.id }}"
+                        {% if supply.quantity <= 0 %}disabled{% endif %}>
+                    <i class="fas fa-cart-plus me-2"></i>
+                    <span>{% if supply.quantity > 0 %}Agregar al carrito{% else %}Agotado{% endif %}</span>
+                </button>
             </div>
         </div>
         {% endfor %}
     </div>
 
-    <!-- Mensaje cuando no hay resultados -->
-    <div id="noResults" class="alert alert-info text-center mt-4" style="display: none;">
-        <i class="bi bi-search me-2"></i>
-        No se encontraron productos que coincidan con tu búsqueda
+    <div id="noResults" class="no-results" style="display: none;">
+        <i class="fas fa-search"></i>
+        <p>No se encontraron productos</p>
+        <span>Intenta con otra búsqueda</span>
     </div>
 </div>
+
+<!-- Contenedor de Notificaciones -->
+<div class="notifications-container"></div>
 {% endblock %}
 
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Funcionalidad del carrito
-    const forms = document.querySelectorAll('.add-to-cart-form');
-    forms.forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const supplyId = this.dataset.supplyId;
-            const quantity = parseInt(this.querySelector('input[name="quantity"]').value);
-            
-            fetch(`/cart/add/${supplyId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    quantity: quantity
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.redirect) {
-                    window.location.href = data.redirect;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                window.location.reload();
-            });
-        });
-    });
+    initializeSearch();
+    initializeCart();
+});
 
-    // Funcionalidad de búsqueda
+function initializeSearch() {
     const searchInput = document.getElementById('searchInput');
-    const categoryFilter = document.getElementById('categoryFilter');
-    const productsContainer = document.getElementById('productsContainer');
+    const storeGrid = document.getElementById('storeGrid');
+    const cards = storeGrid.getElementsByClassName('store-card');
     const noResults = document.getElementById('noResults');
-    const products = document.querySelectorAll('.product-item');
 
-    function filterProducts() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const selectedCategory = categoryFilter.value.toLowerCase();
-        let hasVisibleProducts = false;
+    searchInput.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        let hasResults = false;
 
-        products.forEach(product => {
-            const name = product.dataset.name;
-            const category = product.dataset.category;
-            const description = product.dataset.description;
+        Array.from(cards).forEach(card => {
+            const name = card.dataset.name;
+            const category = card.dataset.category || '';
+            const isVisible = name.includes(searchTerm) || category.includes(searchTerm);
             
-            const matchesSearch = name.includes(searchTerm) || 
-                                category.includes(searchTerm) || 
-                                description.includes(searchTerm);
-            const matchesCategory = !selectedCategory || category === selectedCategory;
+            card.style.display = isVisible ? '' : 'none';
+            if (isVisible) hasResults = true;
+        });
 
-            if (matchesSearch && matchesCategory) {
-                product.style.display = '';
-                hasVisibleProducts = true;
-            } else {
-                product.style.display = 'none';
+        noResults.style.display = hasResults ? 'none' : 'flex';
+        storeGrid.style.display = hasResults ? 'grid' : 'none';
+    });
+}
+
+function initializeCart() {
+    const storeGrid = document.getElementById('storeGrid');
+
+    storeGrid.addEventListener('click', function(e) {
+        const addButton = e.target.closest('.btn-add-cart');
+        if (!addButton || addButton.disabled) return;
+
+        const supplyId = addButton.dataset.supplyId;
+        if (!supplyId) return;
+
+        addButton.disabled = true;
+        
+        addToCart(supplyId)
+            .then(() => {
+                addButton.disabled = false;
+            })
+            .catch(() => {
+                addButton.disabled = false;
+            });
+    });
+}
+
+async function addToCart(supplyId) {
+    try {
+        const response = await fetch(`/add-to-cart/${supplyId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             }
         });
 
-        // Mostrar/ocultar mensaje de no resultados
-        noResults.style.display = hasVisibleProducts ? 'none' : 'block';
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
+
+        const data = await response.json();
+        showNotification(data.message, data.success ? 'success' : 'error');
+        
+        if (data.success) {
+            updateCartBadge(data.cart_count);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Error al agregar al carrito', 'error');
+        throw error;
     }
+}
 
-    // Eventos para filtrar
-    searchInput.addEventListener('input', filterProducts);
-    categoryFilter.addEventListener('change', filterProducts);
+function updateCartBadge(count) {
+    const badge = document.querySelector('.cart-badge');
+    if (badge) {
+        badge.textContent = count;
+        badge.style.display = count === 0 ? 'none' : 'flex';
+    }
+}
 
-    // Animación suave al filtrar
-    products.forEach(product => {
-        product.style.transition = 'all 0.3s ease-out';
-    });
-});
+function showNotification(message, type = 'success') {
+    const container = document.querySelector('.notifications-container');
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    container.appendChild(notification);
+
+    setTimeout(() => notification.classList.add('show'), 100);
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
+}
 </script>
 {% endblock %} 

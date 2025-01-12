@@ -36,6 +36,14 @@
                                     </select>
                                 </div>
                                 <div class="form-group mb-3">
+                                    <label for="store_type">Tipo de Tienda</label>
+                                    <select class="form-control" id="store_type" name="store_type" required>
+                                        {% for store_type in store_types %}
+                                        <option value="{{ store_type.id }}">{{ store_type.name|title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
                                     <label for="description">Descripción</label>
                                     <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                                 </div>

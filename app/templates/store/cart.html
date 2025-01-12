@@ -1,167 +1,253 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Carrito - FAPS{% endblock %}
-
-{% block page_title %}Carrito de Compras{% endblock %}
-
-{% block breadcrumbs %}
-<li class="breadcrumb-item"><a href="{{ url_for('store_bp.store') }}" class="text-decoration-none">Tienda</a></li>
-<li class="breadcrumb-item active">Carrito</li>
-{% endblock %}
+{% block title %}Carrito de Compras - FAPS{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>Carrito de Entregas</h1>
-    
+<div class="container">
+    <div class="store-header mb-4">
+        <h2><i class="fas fa-shopping-cart me-2"></i>Carrito de Compras</h2>
+    </div>
+
     {% if cart_items %}
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Items en el Carrito</h5>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Producto</th>
-                                    <th>Cantidad</th>
-                                    <th>Stock Disponible</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in cart_items %}
-                                <tr>
-                                    <td>
-                                        {% if item.supply.photo %}
-                                        <img src="{{ url_for('static', filename='uploads/supplies/' + item.supply.photo) }}" 
-                                             alt="{{ item.supply.name }}" class="img-thumbnail" 
-                                             style="width: 50px; height: 50px; object-fit: cover;">
-                                        {% endif %}
-                                        {{ item.supply.name }}
-                                    </td>
-                                    <td>
-                                        <input type="number" class="form-control quantity-input" 
-                                               value="{{ item.quantity }}" min="1" 
-                                               max="{{ item.supply.quantity }}"
-                                               data-item-id="{{ item.id }}">
-                                    </td>
-                                    <td>{{ item.supply.quantity }}</td>
-                                    <td>
-                                        <button class="btn btn-danger btn-sm remove-item" 
-                                                data-item-id="{{ item.id }}">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+        <div class="cart-grid" id="cartGrid">
+            {% for item in cart_items %}
+            <div class="cart-item" 
+                 data-item-id="{{ item.id }}"
+                 data-max-stock="{{ item.stock }}">
+                <div class="cart-item-image">
+                    {% if item.photo %}
+                        <picture>
+                            <source srcset="{{ url_for('static', filename='uploads/supplies/' + item.photo|replace('.jpg', '.webp')|replace('.png', '.webp')) }}" type="image/webp">
+                            <source srcset="{{ url_for('static', filename='uploads/supplies/' + item.photo) }}" type="image/jpeg">
+                            <img src="{{ url_for('static', filename='uploads/supplies/' + item.photo) }}" alt="{{ item.name }}" loading="lazy">
+                        </picture>
+                    {% else %}
+                        <img src="{{ url_for('static', filename='img/default-product.jpg') }}" alt="Imagen por defecto" loading="lazy">
+                    {% endif %}
+                </div>
+                <div class="cart-item-content">
+                    <h3 class="cart-item-title">{{ item.name }}</h3>
+                    <div class="cart-item-quantity">
+                        <div class="quantity-selector">
+                            <button type="button" class="quantity-btn minus" data-action="decrease">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" value="{{ item.quantity }}" min="1" max="{{ item.stock }}" 
+                                   class="quantity-input">
+                            <button type="button" class="quantity-btn plus" data-action="increase">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
+                <button class="btn-remove" data-action="remove">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="cart-finalize mt-4">
+            <div class="form-group mb-3">
+                <label for="resident">Seleccionar Beneficiario</label>
+                <select class="form-control" id="resident" name="resident" required>
+                    <option value="">Seleccione un beneficiario</option>
+                    {% for resident in residents %}
+                    <option value="{{ resident.id }}">{{ resident.name }} {{ resident.lastname }}</option>
+                    {% endfor %}
+                </select>
             </div>
         </div>
         
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Finalizar Entrega</h5>
-                    <form id="checkout-form">
-                        <div class="form-group">
-                            <label for="resident_id">Seleccionar Beneficiario</label>
-                            <select class="form-control" id="resident_id" name="resident_id" required>
-                                <option value="">Seleccione un beneficiario</option>
-                                {% for resident in residents %}
-                                <option value="{{ resident.id }}">
-                                    {{ resident.name }} {{ resident.lastname }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block mt-3">
-                            <i class="fas fa-check"></i> Realizar Entrega
-                        </button>
-                    </form>
-                </div>
-            </div>
+        <div class="cart-actions mt-4">
+            <a href="{{ url_for('store_bp.store') }}" class="btn-back-to-store">
+                <i class="fas fa-arrow-left me-2"></i>
+                Seguir comprando
+            </a>
+            <button type="button" class="btn-finalize" onclick="finalizeCart()">
+                <i class="fas fa-check me-2"></i>
+                Finalizar Entrega
+            </button>
         </div>
-    </div>
     {% else %}
-    <div class="alert alert-info">
-        El carrito está vacío. <a href="{{ url_for('store_bp.store') }}">Ir a la tienda</a>
-    </div>
+        <div class="empty-cart">
+            <i class="fas fa-shopping-cart"></i>
+            <h3>Tu carrito está vacío</h3>
+            <p>¿No sabes qué pedir? ¡Miles de productos te esperan!</p>
+            <a href="{{ url_for('store_bp.store') }}" class="btn-back-to-store">
+                <i class="fas fa-store me-2"></i>
+                Ir a la tienda
+            </a>
+        </div>
     {% endif %}
 </div>
+
+<!-- Contenedor de Notificaciones -->
+<div class="notifications-container"></div>
 {% endblock %}
 
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Manejar eliminación de items
-    document.querySelectorAll('.remove-item').forEach(button => {
-        button.addEventListener('click', function() {
-            const itemId = this.dataset.itemId;
-            if (confirm('¿Está seguro de eliminar este item?')) {
-                fetch(`/cart/remove/${itemId}`, {
-                    method: 'POST'
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error al eliminar el item');
-                    }
-                    window.location.reload();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    const alertsContainer = document.querySelector('.alerts-container') || createAlertsContainer();
-                    showAlert('Error al eliminar el item del carrito', 'danger');
-                });
-            }
-        });
+    initializeCartControls();
+});
+
+function initializeCartControls() {
+    const cartGrid = document.getElementById('cartGrid');
+    if (!cartGrid) return;
+
+    cartGrid.addEventListener('click', function(e) {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+
+        const action = target.dataset.action;
+        const cartItem = target.closest('.cart-item');
+        const itemId = cartItem.dataset.itemId;
+
+        switch (action) {
+            case 'increase':
+            case 'decrease':
+                handleQuantityChange(cartItem, action === 'increase');
+                break;
+            case 'remove':
+                handleRemoveItem(itemId);
+                break;
+        }
     });
 
-    // Función para crear el contenedor de alertas si no existe
-    function createAlertsContainer() {
-        const container = document.createElement('div');
-        container.className = 'alerts-container';
-        document.body.appendChild(container);
-        return container;
-    }
+    // Manejar cambios directos en los inputs de cantidad
+    cartGrid.addEventListener('change', function(e) {
+        if (e.target.matches('.quantity-input')) {
+            const cartItem = e.target.closest('.cart-item');
+            handleQuantityInput(cartItem, e.target);
+        }
+    });
+}
 
-    // Función para mostrar alertas
-    function showAlert(message, type) {
-        const alertsContainer = document.querySelector('.alerts-container');
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${type} alert-dismissible fade show`;
-        alert.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-        alertsContainer.appendChild(alert);
+function handleQuantityChange(cartItem, isIncrease) {
+    const input = cartItem.querySelector('.quantity-input');
+    const currentValue = parseInt(input.value);
+    const maxStock = parseInt(cartItem.dataset.maxStock);
+    
+    let newValue = isIncrease ? currentValue + 1 : currentValue - 1;
+    newValue = Math.max(1, Math.min(newValue, maxStock));
+    
+    if (newValue !== currentValue) {
+        input.value = newValue;
+        // Aquí podrías agregar la lógica para actualizar el carrito en el servidor
+    }
+}
+
+function handleQuantityInput(cartItem, input) {
+    const maxStock = parseInt(cartItem.dataset.maxStock);
+    let value = parseInt(input.value);
+    
+    if (isNaN(value) || value < 1) {
+        value = 1;
+    } else if (value > maxStock) {
+        value = maxStock;
+    }
+    
+    input.value = value;
+    // Aquí podrías agregar la lógica para actualizar el carrito en el servidor
+}
+
+async function handleRemoveItem(itemId) {
+    try {
+        const response = await fetch(`/remove-from-cart/${itemId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
+
+        const data = await response.json();
         
-        // Auto-cerrar después de 5 segundos
-        setTimeout(() => {
-            alert.classList.remove('show');
-            setTimeout(() => alert.remove(), 300);
-        }, 5000);
-    }
-
-    // Manejar checkout
-    const checkoutForm = document.getElementById('checkout-form');
-    if (checkoutForm) {
-        checkoutForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const residentId = document.getElementById('resident_id').value;
-            
-            if (!residentId) {
-                showAlert('Por favor seleccione un beneficiario', 'warning');
-                return;
+        if (data.success) {
+            const cartItem = document.querySelector(`.cart-item[data-item-id="${itemId}"]`);
+            if (cartItem) {
+                cartItem.remove();
             }
             
-            // Continuar con el envío del formulario
-            this.submit();
-        });
+            updateCartBadge(data.cart_count);
+            
+            // Si no quedan items, recargar la página para mostrar el carrito vacío
+            if (data.cart_count === 0) {
+                location.reload();
+            }
+        }
+        
+        showNotification(data.message, data.success ? 'success' : 'error');
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Error al eliminar el producto', 'error');
     }
-});
+}
+
+async function finalizeCart() {
+    const residentId = document.getElementById('resident').value;
+    if (!residentId) {
+        showNotification('Debes seleccionar un beneficiario', 'error');
+        return;
+    }
+
+    try {
+        const response = await fetch('/finalize-cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                resident_id: residentId
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
+
+        const data = await response.json();
+        showNotification(data.message, data.success ? 'success' : 'error');
+        
+        if (data.success) {
+            // Recargar la página después de 2 segundos
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Error al finalizar la entrega', 'error');
+    }
+}
+
+function updateCartBadge(count) {
+    const badge = document.querySelector('.cart-badge');
+    if (badge) {
+        badge.textContent = count;
+        badge.style.display = count === 0 ? 'none' : 'flex';
+    }
+}
+
+function showNotification(message, type = 'success') {
+    const container = document.querySelector('.notifications-container');
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    container.appendChild(notification);
+
+    setTimeout(() => notification.classList.add('show'), 100);
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
+}
 </script>
 {% endblock %} 

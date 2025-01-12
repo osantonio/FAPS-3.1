@@ -33,9 +33,9 @@ def login():
         if user and bcrypt.check_password_hash(user.password, password):
             session['user_id'] = user.id
             session['user_type'] = user.type_user
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('main_bp.dashboard'))
         else:
-            flash('Número de identificación o contraseña incorrectos')
+            flash('Número de identificación o contraseña incorrectos', 'danger')
             return redirect(url_for('auth_bp.login'))
     
     return render_template('login.html')
